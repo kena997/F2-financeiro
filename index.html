@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F2 INFORMÁTICA - GESTÃO & CLIENTES</title>
+    <title>F2 - GESTÃO PRO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #1e3c72; --product: #27ae60; --service: #8e44ad; --danger: #e74c3c; --bg: #f0f2f5; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; text-transform: uppercase; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; text-transform: uppercase; font-size: 13px; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
         .brand { text-align: center; border-bottom: 2px solid var(--primary); margin-bottom: 15px; padding-bottom: 10px; }
         .brand img { max-width: 180px; height: auto; display: block; margin: 0 auto; }
@@ -17,15 +17,17 @@
         .form-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
         h3 { font-size: 12px; margin: 0 0 10px 0; color: var(--primary); border-left: 4px solid var(--primary); padding-left: 5px; }
         
-        input, select { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 13px; text-transform: uppercase; }
         
         .btn-reg { background: var(--primary); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .btn-sec { background: #555; color: white; padding: 8px; border: none; border-radius: 6px; width: 100%; font-size: 11px; cursor: pointer; margin-bottom: 10px; }
+        .btn-sec { background: #555; color: white; padding: 10px; border: none; border-radius: 6px; width: 100%; font-size: 11px; cursor: pointer; margin-bottom: 10px; }
         
         .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 12px; max-height: 80vh; overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 450px; border-radius: 12px; max-height: 90vh; overflow-y: auto; }
 
         .item { background: white; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .cliente-info { font-size: 11px; color: #666; line-height: 1.4; }
+        
         .relatorios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
         .btn-rel { background: #eee; border: none; padding: 8px 2px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
         .btn-rel.active { background: var(--primary); color: white; }
@@ -37,6 +39,7 @@
         .tabs { display: flex; gap: 5px; margin: 10px 0; }
         .tab { flex: 1; padding: 10px; text-align: center; background: #ddd; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .tab.active-p { background: var(--product); color: white; }
+        .tab.active-s { background: var(--service); color: white; }
     </style>
 </head>
 <body>
@@ -46,7 +49,7 @@
 
     <div class="chart-container"><canvas id="graficoF2"></canvas></div>
 
-    <button class="btn-sec" onclick="abrirClientes()">👤 GERENCIAR CADASTRO DE CLIENTES</button>
+    <button class="btn-sec" onclick="abrirClientes()">👤 CADASTRO DE CLIENTES / EMPRESAS</button>
 
     <div class="relatorios">
         <button class="btn-rel active" onclick="setPeriodo('dia', this)">HOJE</button>
@@ -62,17 +65,17 @@
     </div>
 
     <div class="form-box">
-        <h3>LANCAR VENDA/SERVIÇO</h3>
+        <h3>LANÇAR NOVO REGISTRO</h3>
         <select id="sel-cliente"><option value="AVULSO">SELECIONE O CLIENTE</option></select>
         <select id="tipo"><option value="venda">📦 PEÇAS</option><option value="servico">🔧 SERVIÇO</option></select>
-        <input type="text" id="desc" placeholder="O QUE FOI VENDIDO/FEITO?">
+        <input type="text" id="desc" placeholder="DESCRIÇÃO DO ITEM">
         <input type="number" id="venda" placeholder="VALOR FINAL (R$)">
         <input type="number" id="custo" placeholder="CUSTO (R$)">
         <select id="pagamento">
             <option value="PIX">PIX</option><option value="DINHEIRO">DINHEIRO</option>
             <option value="C. CRÉDITO">C. CRÉDITO</option><option value="C. DÉBITO">C. DÉBITO</option>
         </select>
-        <button class="btn-reg" onclick="registrarVenda()">SALVAR NO HISTÓRICO</button>
+        <button class="btn-reg" onclick="registrarVenda()">SALVAR LANÇAMENTO</button>
     </div>
 
     <div class="tabs">
@@ -84,14 +87,18 @@
 
 <div id="modalClientes" class="modal">
     <div class="modal-content">
-        <h3>NOVO CLIENTE</h3>
-        <input type="text" id="cad-nome" placeholder="NOME COMPLETO">
-        <input type="text" id="cad-tel" placeholder="TELEFONE/WHATSAPP">
-        <button class="btn-reg" onclick="salvarCliente()">CADASTRAR</button>
+        <h3>CADASTRO DE CLIENTE / ESTABELECIMENTO</h3>
+        <input type="text" id="cad-nome" placeholder="NOME DO RESPONSÁVEL">
+        <input type="text" id="cad-fantasia" placeholder="NOME DO ESTABELECIMENTO (OPCIONAL)">
+        <input type="text" id="cad-doc" placeholder="CPF OU CNPJ">
+        <input type="text" id="cad-tel" placeholder="TELEFONE / WHATSAPP">
+        <input type="text" id="cad-end" placeholder="ENDEREÇO COMPLETO">
+        
+        <button class="btn-reg" onclick="salvarCliente()">SALVAR CADASTRO</button>
         <hr>
-        <h3>LISTA DE CLIENTES</h3>
+        <h3>CLIENTES CADASTRADOS</h3>
         <div id="lista-clientes-cadastrados"></div>
-        <button class="btn-sec" onclick="fecharClientes()">FECHAR</button>
+        <button class="btn-sec" onclick="fecharClientes()">VOLTAR AO SISTEMA</button>
     </div>
 </div>
 
@@ -107,7 +114,6 @@
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-    // --- LÓGICA DE CLIENTES ---
     function abrirClientes() { 
         document.getElementById('modalClientes').style.display = 'block'; 
         listarClientes();
@@ -115,13 +121,22 @@
     function fecharClientes() { document.getElementById('modalClientes').style.display = 'none'; }
 
     function salvarCliente() {
-        const nome = document.getElementById('cad-nome').value.toUpperCase();
-        const tel = document.getElementById('cad-tel').value;
-        if(!nome) return alert("NOME OBRIGATÓRIO");
-        dadosClientes.push({ nome, tel });
+        const cliente = {
+            nome: document.getElementById('cad-nome').value.toUpperCase(),
+            fantasia: document.getElementById('cad-fantasia').value.toUpperCase(),
+            doc: document.getElementById('cad-doc').value,
+            tel: document.getElementById('cad-tel').value,
+            end: document.getElementById('cad-end').value.toUpperCase()
+        };
+
+        if(!cliente.nome) return alert("NOME É OBRIGATÓRIO");
+        
+        dadosClientes.push(cliente);
         localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes));
-        document.getElementById('cad-nome').value = "";
-        document.getElementById('cad-tel').value = "";
+        
+        // Limpar campos
+        ["cad-nome", "cad-fantasia", "cad-doc", "cad-tel", "cad-end"].forEach(id => document.getElementById(id).value = "");
+        
         listarClientes();
         atualizarSelectClientes();
     }
@@ -130,12 +145,21 @@
         const div = document.getElementById('lista-clientes-cadastrados');
         div.innerHTML = "";
         dadosClientes.forEach((c, i) => {
-            div.innerHTML += `<div class="item"><span>${c.nome}</span> <button onclick="removerCliente(${i})" style="color:red; border:none; background:none;">[X]</button></div>`;
+            div.innerHTML += `
+                <div class="item" style="display:block; position:relative;">
+                    <button onclick="removerCliente(${i})" style="position:absolute; right:10px; top:10px; color:red; border:none; background:none; font-weight:bold;">[X]</button>
+                    <b>${c.fantasia || c.nome}</b><br>
+                    <div class="cliente-info">
+                        ${c.fantasia ? 'RESP: ' + c.nome + '<br>' : ''}
+                        DOC: ${c.doc || '---'} | TEL: ${c.tel || '---'}<br>
+                        END: ${c.end || '---'}
+                    </div>
+                </div>`;
         });
     }
 
     function removerCliente(i) {
-        if(confirm("REMOVER CLIENTE?")) {
+        if(confirm("EXCLUIR ESTE CLIENTE?")) {
             dadosClientes.splice(i, 1);
             localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes));
             listarClientes();
@@ -146,12 +170,12 @@
     function atualizarSelectClientes() {
         const sel = document.getElementById('sel-cliente');
         sel.innerHTML = '<option value="AVULSO">SELECIONE O CLIENTE</option>';
-        dadosClientes.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(c => {
-            sel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+        dadosClientes.sort((a,b) => (a.fantasia || a.nome).localeCompare(b.fantasia || b.nome)).forEach(c => {
+            const nomeExibicao = c.fantasia ? `${c.fantasia} (${c.nome})` : c.nome;
+            sel.innerHTML += `<option value="${nomeExibicao}">${nomeExibicao}</option>`;
         });
     }
 
-    // --- LÓGICA DE VENDAS ---
     function registrarVenda() {
         const item = {
             cliente: document.getElementById('sel-cliente').value,
@@ -163,7 +187,7 @@
             ts: Date.now(),
             data: new Date().toLocaleDateString('pt-BR')
         };
-        if(!item.desc || item.venda === 0) return alert("ERRO: PREENCHA OS DADOS");
+        if(!item.desc || item.venda === 0) return alert("PREENCHA OS CAMPOS!");
         dadosVendas.push(item);
         localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas));
         ["desc", "venda", "custo"].forEach(id => document.getElementById(id).value = "");
@@ -193,7 +217,6 @@
             else if (periodoAtual === 'semana' && item.ts > (agora - 7*24*60*60*1000)) inc = true;
             else if (periodoAtual === 'mes' && d.getMonth() === agora.getMonth()) inc = true;
             else if (periodoAtual === 'ano' && d.getFullYear() === agora.getFullYear()) inc = true;
-
             if (inc) {
                 if (item.tipo === 'venda') vB += item.venda; else sB += item.venda;
                 lucro += (item.venda - item.custo);
@@ -221,11 +244,10 @@
         });
     }
 
-    function removerVenda(i) { if(confirm("EXCLUIR REGISTRO?")) { dadosVendas.splice(i, 1); localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas)); atualizarTudo(); } }
+    function removerVenda(i) { if(confirm("EXCLUIR?")) { dadosVendas.splice(i, 1); localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas)); atualizarTudo(); } }
     function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-rel').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
     function mudarAba(t) { abaAtual = t; atualizarTudo(); }
 
-    // Init
     atualizarSelectClientes();
     atualizarTudo();
 </script>
