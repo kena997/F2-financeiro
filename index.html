@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F2 - GESTÃO COMPLETA</title>
+    <title>F2 INFORMÁTICA - GESTÃO</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #1e3c72; --product: #27ae60; --service: #8e44ad; --danger: #e74c3c; --bg: #f0f2f5; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; text-transform: uppercase; }
         .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        
-        /* Ajuste para a Logomarca */
         .brand { text-align: center; border-bottom: 2px solid var(--primary); margin-bottom: 15px; padding-bottom: 10px; }
         .brand img { max-width: 180px; height: auto; display: block; margin: 0 auto; }
-
-        .meta-container { background: #eee; border-radius: 10px; padding: 10px; margin-bottom: 15px; text-align: center; }
+        
+        .chart-container { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; height: 200px; }
+        .meta-container { background: #eee; border-radius: 10px; padding: 10px; margin-bottom: 15px; text-align: center; cursor: pointer; }
         .meta-bar { background: #ddd; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 5px; }
         .meta-progress { background: var(--product); height: 100%; width: 0%; transition: 0.5s; }
 
@@ -27,33 +27,28 @@
 
         .resumo-pagamentos { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border: 1px dashed #ccc; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 10px; gap: 8px; }
         .pag-item { text-align: center; border-bottom: 1px solid #f0f0f0; padding: 2px; }
-        .pag-item span { display: block; color: #555; font-weight: bold; }
-
-        .favs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px; }
-        .btn-fav { background: #fff; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 15px; font-size: 10px; white-space: nowrap; cursor: pointer; }
 
         .form-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
         input, select { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
-        
-        .btn-reg { background: var(--primary); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 5px; }
-        .btn-csv { background: #333; width: 100%; padding: 8px; border: none; border-radius: 8px; color: white; font-size: 10px; cursor: pointer; }
+        .btn-reg { background: var(--primary); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
         
         .tabs { display: flex; gap: 5px; margin: 10px 0; }
         .tab { flex: 1; padding: 10px; text-align: center; background: #ddd; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .tab.active-p { background: var(--product); color: white; }
         .tab.active-s { background: var(--service); color: white; }
-
         .item { background: white; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .item-v { border-left: 5px solid var(--product); }
-        .item-s { border-left: 5px solid var(--service); }
     </style>
 </head>
 <body>
 
 <div class="card">
-   <div class="brand">
-    <img src="Logo_Kena.png" alt="F2 INFORMÁTICA">
-</div>
+    <div class="brand">
+        <img src="Logo_Kena.png" alt="F2 INFORMÁTICA">
+    </div>
+
+    <div class="chart-container">
+        <canvas id="graficoF2"></canvas>
+    </div>
 
     <div class="meta-container" onclick="mudarMeta()">
         <small>META MENSAL: <b id="txt-meta">R$ 0,00</b></small>
@@ -69,43 +64,28 @@
 
     <div class="dash-detalhado">
         <div class="res-box" style="grid-column: span 2;">LUCRO LÍQUIDO <b id="rel-lucro" style="color:#2ecc71; font-size:1.4em;">R$ 0,00</b></div>
-        <div class="res-box">VENDAS (PEÇAS) <b id="rel-v-bruto" style="color:var(--product)">R$ 0,00</b></div>
+        <div class="res-box">PEÇAS <b id="rel-v-bruto" style="color:var(--product)">R$ 0,00</b></div>
         <div class="res-box">SERVIÇOS <b id="rel-s-bruto" style="color:var(--service)">R$ 0,00</b></div>
     </div>
 
     <div class="resumo-pagamentos">
-        <div class="pag-item"><span>PIX</span><b id="total-pix" style="color: #2980b9;">R$ 0,00</b></div>
-        <div class="pag-item"><span>DINHEIRO</span><b id="total-dinheiro" style="color: #27ae60;">R$ 0,00</b></div>
-        <div class="pag-item"><span>C. CRÉDITO</span><b id="total-credito" style="color: #8e44ad;">R$ 0,00</b></div>
-        <div class="pag-item"><span>C. DÉBITO</span><b id="total-debito" style="color: #e67e22;">R$ 0,00</b></div>
-    </div>
-
-    <div class="favs">
-        <button class="btn-fav" onclick="fav('SSD 240GB', 180, 110, 'venda')">+ SSD 240</button>
-        <button class="btn-fav" onclick="fav('FORMATAÇÃO', 100, 0, 'servico')">+ FORMATAR</button>
-        <button class="btn-fav" onclick="fav('LIMPEZA PC', 80, 10, 'servico')">+ LIMPEZA</button>
-        <button class="btn-fav" onclick="fav('MOUSE OPT', 35, 15, 'venda')">+ MOUSE</button>
+        <div class="pag-item"><span>PIX</span><b id="total-pix">R$ 0,00</b></div>
+        <div class="pag-item"><span>DINHEIRO</span><b id="total-dinheiro">R$ 0,00</b></div>
+        <div class="pag-item"><span>C. CRÉDITO</span><b id="total-credito">R$ 0,00</b></div>
+        <div class="pag-item"><span>C. DÉBITO</span><b id="total-debito">R$ 0,00</b></div>
     </div>
 
     <div class="form-box">
-        <select id="tipo">
-            <option value="venda">📦 PEÇAS / HARDWARE</option>
-            <option value="servico">🔧 SERVIÇOS / MÃO DE OBRA</option>
-        </select>
+        <select id="tipo"><option value="venda">📦 PEÇAS</option><option value="servico">🔧 SERVIÇO</option></select>
         <input type="text" id="cliente" placeholder="CLIENTE">
         <input type="text" id="desc" placeholder="DESCRIÇÃO">
-        <div style="display:flex; gap:5px;">
-            <input type="text" id="venda" placeholder="V. FINAL (R$)" inputmode="decimal">
-            <input type="text" id="custo" placeholder="CUSTO (R$)" inputmode="decimal">
-        </div>
+        <input type="number" id="venda" placeholder="VALOR FINAL">
+        <input type="number" id="custo" placeholder="CUSTO">
         <select id="pagamento">
-            <option value="PIX">⚡ PIX</option>
-            <option value="DINHEIRO">💵 DINHEIRO</option>
-            <option value="C. CRÉDITO">💳 CARTÃO CRÉDITO</option>
-            <option value="C. DÉBITO">💳 CARTÃO DÉBITO</option>
+            <option value="PIX">PIX</option><option value="DINHEIRO">DINHEIRO</option>
+            <option value="C. CRÉDITO">C. CRÉDITO</option><option value="C. DÉBITO">C. DÉBITO</option>
         </select>
         <button class="btn-reg" onclick="registrar()">SALVAR REGISTRO</button>
-        <button class="btn-csv" onclick="exportarCSV()">BAIXAR BACKUP EXCEL (CSV)</button>
     </div>
 
     <div class="tabs">
@@ -121,14 +101,21 @@
     let metaMensal = parseFloat(localStorage.getItem("F2_META")) || 5000;
     let abaAtual = 'venda';
     let periodoAtual = 'dia';
+    let meuGrafico = null;
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-    function fav(d, v, c, t) {
-        document.getElementById('desc').value = d;
-        document.getElementById('venda').value = v;
-        document.getElementById('custo').value = c;
-        document.getElementById('tipo').value = t;
+    function inicializarGrafico(v, s) {
+        const ctx = document.getElementById('graficoF2').getContext('2d');
+        if (meuGrafico) meuGrafico.destroy();
+        meuGrafico = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['PEÇAS', 'SERVIÇOS'],
+                datasets: [{ data: [v, s], backgroundColor: ['#27ae60', '#8e44ad'], borderWidth: 0 }]
+            },
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
     }
 
     function registrar() {
@@ -136,13 +123,13 @@
             tipo: document.getElementById('tipo').value,
             cliente: document.getElementById('cliente').value.toUpperCase() || "AVULSO",
             desc: document.getElementById('desc').value.toUpperCase(),
-            venda: parseFloat(document.getElementById('venda').value.toString().replace(',', '.')) || 0,
-            custo: parseFloat(document.getElementById('custo').value.toString().replace(',', '.')) || 0,
+            venda: parseFloat(document.getElementById('venda').value) || 0,
+            custo: parseFloat(document.getElementById('custo').value) || 0,
             pag: document.getElementById('pagamento').value,
-            ts: new Date().getTime(),
+            ts: Date.now(),
             data: new Date().toLocaleDateString('pt-BR')
         };
-        if (!item.desc || item.venda === 0) return alert("ERRO!");
+        if (!item.desc || item.venda === 0) return alert("PREENCHA OS CAMPOS!");
         dados.push(item);
         localStorage.setItem(chave, JSON.stringify(dados));
         ["cliente", "desc", "venda", "custo"].forEach(id => document.getElementById(id).value = "");
@@ -150,73 +137,63 @@
     }
 
     function mudarMeta() {
-        let n = prompt("QUAL A NOVA META MENSAL?", metaMensal);
+        let n = prompt("QUAL A META?", metaMensal);
         if(n) { metaMensal = parseFloat(n); localStorage.setItem("F2_META", metaMensal); atualizarTudo(); }
     }
 
     function calcular() {
         const agora = new Date();
         let vB = 0, sB = 0, lucro = 0, fMes = 0;
-        let tPix = 0, tDin = 0, tCre = 0, tDeb = 0;
+        let p = { PIX:0, DINHEIRO:0, "C. CRÉDITO":0, "C. DÉBITO":0 };
 
         dados.forEach(item => {
             const d = new Date(item.ts);
             let inc = false;
             if (periodoAtual === 'dia' && d.toDateString() === agora.toDateString()) inc = true;
             else if (periodoAtual === 'semana' && item.ts > (agora - 7*24*60*60*1000)) inc = true;
-            else if (periodoAtual === 'mes' && d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear()) inc = true;
+            else if (periodoAtual === 'mes' && d.getMonth() === agora.getMonth()) inc = true;
             else if (periodoAtual === 'ano' && d.getFullYear() === agora.getFullYear()) inc = true;
 
             if (inc) {
                 if (item.tipo === 'venda') vB += item.venda; else sB += item.venda;
                 lucro += (item.venda - item.custo);
-                if(item.pag === 'PIX') tPix += item.venda;
-                else if(item.pag === 'DINHEIRO') tDin += item.venda;
-                else if(item.pag === 'C. CRÉDITO') tCre += item.venda;
-                else if(item.pag === 'C. DÉBITO') tDeb += item.venda;
+                p[item.pag] = (p[item.pag] || 0) + item.venda;
             }
-            if (d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear()) fMes += item.venda;
+            if (d.getMonth() === agora.getMonth()) fMes += item.venda;
         });
 
         document.getElementById('rel-v-bruto').innerText = fmt(vB);
         document.getElementById('rel-s-bruto').innerText = fmt(sB);
         document.getElementById('rel-lucro').innerText = fmt(lucro);
-        document.getElementById('total-pix').innerText = fmt(tPix);
-        document.getElementById('total-dinheiro').innerText = fmt(tDin);
-        document.getElementById('total-credito').innerText = fmt(tCre);
-        document.getElementById('total-debito').innerText = fmt(tDeb);
+        document.getElementById('total-pix').innerText = fmt(p.PIX);
+        document.getElementById('total-dinheiro').innerText = fmt(p.DINHEIRO);
+        document.getElementById('total-credito').innerText = fmt(p["C. CRÉDITO"]);
+        document.getElementById('total-debito').innerText = fmt(p["C. DÉBITO"]);
         document.getElementById('txt-meta').innerText = fmt(metaMensal);
         document.getElementById('bar-meta').style.width = Math.min((fMes / metaMensal) * 100, 100) + "%";
+        inicializarGrafico(vB, sB);
     }
 
-    function exportarCSV() {
-        let csv = "Data;Tipo;Cliente;Descricao;Venda;Custo;Pagamento\n";
-        dados.forEach(i => csv += `${i.data};${i.tipo};${i.cliente};${i.desc};${i.venda.toFixed(2)};${i.custo.toFixed(2)};${i.pag}\n`);
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' }));
-        link.download = "F2_BACKUP.csv";
-        link.click();
-    }
-
-    function mudarAba(t) { abaAtual = t; document.getElementById('tab-v').className = 'tab' + (t === 'venda' ? ' active-p' : ''); document.getElementById('tab-s').className = 'tab' + (t === 'servico' ? ' active-s' : ''); desenhar(); }
+    function mudarAba(t) { abaAtual = t; atualizarTudo(); }
     function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-rel').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
-    
-    function desenhar() {
+    function remover(i) { if(confirm("EXCLUIR?")) { dados.splice(i, 1); localStorage.setItem(chave, JSON.stringify(dados)); atualizarTudo(); } }
+
+    function atualizarTudo() {
+        calcular();
         const lista = document.getElementById('lista');
         lista.innerHTML = "";
-        dados.filter(i => i.tipo === abaAtual).reverse().slice(0, 20).forEach(item => {
+        document.getElementById('tab-v').className = 'tab' + (abaAtual === 'venda' ? ' active-p' : '');
+        document.getElementById('tab-s').className = 'tab' + (abaAtual === 'servico' ? ' active-s' : '');
+        
+        dados.filter(i => i.tipo === abaAtual).reverse().slice(0, 15).forEach(item => {
             const div = document.createElement('div');
-            div.className = `item ${item.tipo === 'venda' ? 'item-v' : 'item-s'}`;
+            div.className = 'item';
             div.innerHTML = `<div><b>${item.cliente}</b><br><small>${item.desc} (${item.pag})</small><br><b>${fmt(item.venda)}</b></div>
-                <button style="background:var(--danger);color:white;border:none;border-radius:4px;padding:8px" onclick="remover(${dados.indexOf(item)})">X</button>`;
+                <button style="background:var(--danger);color:white;border:none;border-radius:6px;padding:8px" onclick="remover(${dados.indexOf(item)})">X</button>`;
             lista.appendChild(div);
         });
     }
-
-    function remover(i) { if(confirm("EXCLUIR REGISTRO?")) { dados.splice(i, 1); localStorage.setItem(chave, JSON.stringify(dados)); atualizarTudo(); } }
-    function atualizarTudo() { calcular(); desenhar(); }
     atualizarTudo();
 </script>
 </body>
-
 </html>
