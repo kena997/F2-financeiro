@@ -3,227 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F2 - GESTÃO PREMIUM</title>
+    <title>F2 GESTÃO PRO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #0f172a; 
-            --accent: #3b82f6;
-            --product: #10b981; 
-            --service: #8b5cf6; 
-            --danger: #ef4444; 
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
+            --primary: #0f172a; --accent: #2563eb; --product: #10b981; 
+            --service: #8b5cf6; --danger: #f43f5e; --bg: #f8fafc;
         }
-
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            background-color: var(--bg); 
-            color: #1e293b;
-            margin: 0; 
-            padding: 15px; 
-            text-transform: uppercase; 
-            font-size: 12px;
-            letter-spacing: 0.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); 
+            margin: 0; padding: 15px; color: #334155; text-transform: uppercase;
         }
-
-        /* Container Principal com Efeito de Sombra Suave */
-        .card { 
-            background: var(--card-bg); 
-            padding: 20px; 
-            border-radius: 24px; 
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05);
-            max-width: 480px; 
-            margin: auto; 
-        }
-
-        .brand { text-align: center; margin-bottom: 25px; }
-        .brand img { max-width: 160px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .container { max-width: 480px; margin: auto; }
         
-        /* Dashboard de Gráfico */
-        .chart-section {
-            background: linear-gradient(145deg, #ffffff, #f1f5f9);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #e2e8f0;
-        }
-        .chart-container { height: 160px; position: relative; }
+        /* Header & Logo */
+        .brand { text-align: center; margin-bottom: 25px; padding: 10px; }
+        .brand img { max-width: 150px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.08)); }
 
-        /* Botões de Ação Rápida */
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 16px;
-            width: 100%;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin-bottom: 20px;
+        /* Dashboard Cards */
+        .card { 
+            background: white; padding: 20px; border-radius: 24px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 15px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
-        .btn-main:active { transform: scale(0.98); }
+        .chart-box { height: 180px; margin-bottom: 10px; }
 
-        /* Estilo dos Inputs */
-        .form-box { 
-            background: #f1f5f9; 
-            padding: 18px; 
-            border-radius: 20px; 
-            margin-bottom: 20px;
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .stat-card { 
+            background: white; padding: 15px; border-radius: 20px; 
+            border: 1px solid #f1f5f9; text-align: center;
         }
+        .stat-card small { font-size: 9px; color: #64748b; display: block; margin-bottom: 5px; }
+        .stat-card b { font-size: 14px; color: var(--primary); }
+
+        /* Filters */
+        .filter-bar { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .btn-filter { 
+            background: white; border: 1px solid #e2e8f0; padding: 8px 15px; 
+            border-radius: 12px; font-size: 10px; font-weight: 700; cursor: pointer; color: #64748b;
+        }
+        .btn-filter.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* Inputs Modernos */
+        .form-group { background: #f1f5f9; padding: 20px; border-radius: 24px; margin-bottom: 20px; }
         input, select { 
-            width: 100%; 
-            padding: 12px 15px; 
-            margin: 6px 0; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 12px; 
-            font-size: 13px; 
-            background: white;
-            color: #334155;
+            width: 100%; padding: 14px; margin: 5px 0; border: 1px solid #e2e8f0; 
+            border-radius: 14px; font-size: 13px; font-family: inherit; font-weight: 600;
+        }
+        .btn-main { 
+            background: var(--accent); color: white; border: none; width: 100%; 
+            padding: 16px; border-radius: 16px; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px;
         }
 
-        /* Resumo de Valores */
-        .dash-detalhado { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-bottom: 20px; 
+        /* Modal / Sheet */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5); 
+            backdrop-filter: blur(8px); z-index: 100; 
         }
-        .res-box { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 16px; 
-            border: 1px solid #e2e8f0;
-            text-align: center;
+        .modal-content { 
+            background: white; position: absolute; bottom: 0; width: 100%; 
+            border-radius: 30px 30px 0 0; padding: 30px 20px; max-height: 90vh; overflow-y: auto;
         }
-        .res-box span { font-size: 10px; color: #64748b; display: block; margin-bottom: 4px; }
-        .res-box b { font-size: 14px; color: var(--primary); }
 
-        /* Tabs de Navegação */
-        .tabs { 
-            display: flex; 
-            background: #e2e8f0; 
-            padding: 4px; 
-            border-radius: 14px; 
-            margin-bottom: 15px; 
-        }
+        /* Tabs & List */
+        .tabs { display: flex; background: #f1f5f9; padding: 5px; border-radius: 16px; margin-bottom: 15px; }
         .tab { 
-            flex: 1; 
-            padding: 10px; 
-            text-align: center; 
-            border-radius: 11px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            color: #64748b;
+            flex: 1; padding: 12px; text-align: center; border-radius: 12px; 
+            font-size: 11px; font-weight: 800; cursor: pointer; color: #64748b;
         }
         .tab.active-p { background: var(--product); color: white; }
         .tab.active-s { background: var(--service); color: white; }
 
-        /* Lista de Itens */
         .item { 
-            background: white; 
-            border: 1px solid #f1f5f9; 
-            padding: 15px; 
-            border-radius: 16px; 
-            margin-bottom: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: white; padding: 16px; border-radius: 20px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
-
-        /* Modais Modernos */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(15, 23, 42, 0.6); 
-            backdrop-filter: blur(4px);
-        }
-        .modal-content { 
-            background: white; 
-            margin: 10% auto; 
-            padding: 25px; 
-            width: 85%; 
-            max-width: 400px; 
-            border-radius: 28px; 
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-        }
-
-        .btn-rel-group { display: flex; gap: 5px; margin-bottom: 15px; }
-        .btn-rel { flex: 1; background: #e2e8f0; border: none; padding: 8px; border-radius: 8px; font-size: 9px; font-weight: bold; }
-        .btn-rel.active { background: var(--accent); color: white; }
-
-        hr { border: 0; border-top: 1px solid #f1f5f9; margin: 15px 0; }
+        .btn-del { background: #fee2e2; color: var(--danger); border: none; padding: 10px; border-radius: 12px; }
     </style>
 </head>
 <body>
 
-<div class="card">
+<div class="container">
     <div class="brand">
         <img src="Logo_Kena.png" alt="F2">
     </div>
 
-    <div class="chart-section">
-        <div class="chart-container">
-            <canvas id="graficoF2"></canvas>
-        </div>
+    <div class="card">
+        <div class="chart-box"><canvas id="graficoF2"></canvas></div>
     </div>
 
-    <button class="btn-main" onclick="abrirClientes()">
-        <i data-lucide="users"></i> CADASTRO DE CLIENTES
-    </button>
-
-    <div class="btn-rel-group">
-        <button class="btn-rel active" onclick="setPeriodo('dia', this)">HOJE</button>
-        <button class="btn-rel" onclick="setPeriodo('semana', this)">SEMANA</button>
-        <button class="btn-rel" onclick="setPeriodo('mes', this)">MÊS</button>
-        <button class="btn-rel" onclick="setPeriodo('ano', this)">ANO</button>
+    <div class="filter-bar">
+        <button class="btn-filter active" onclick="setPeriodo('dia', this)">HOJE</button>
+        <button class="btn-filter" onclick="setPeriodo('semana', this)">7 DIAS</button>
+        <button class="btn-filter" onclick="setPeriodo('mes', this)">ESTE MÊS</button>
+        <button class="btn-filter" onclick="setPeriodo('ano', this)">ESTE ANO</button>
     </div>
 
-    <div class="dash-detalhado">
-        <div class="res-box" style="grid-column: span 2; border-bottom: 3px solid #2ecc71;">
-            <span>LUCRO LÍQUIDO NO PERÍODO</span>
-            <b id="rel-lucro" style="font-size: 20px; color: #10b981;">R$ 0,00</b>
+    <div class="stats-grid">
+        <div class="stat-card" style="grid-column: span 2; background: var(--primary); color: white;">
+            <small style="color: #94a3b8">LUCRO ESTIMADO</small>
+            <b id="rel-lucro" style="font-size: 24px; color: #10b981;">R$ 0,00</b>
         </div>
-        <div class="res-box">
-            <span>PEÇAS</span>
+        <div class="stat-card">
+            <small>PEÇAS</small>
             <b id="rel-v-bruto" style="color: var(--product)">R$ 0,00</b>
         </div>
-        <div class="res-box">
-            <span>SERVIÇOS</span>
+        <div class="stat-card">
+            <small>SERVIÇOS</small>
             <b id="rel-s-bruto" style="color: var(--service)">R$ 0,00</b>
         </div>
     </div>
 
-    <div class="form-box">
-        <h3 style="margin-top:0; font-size:11px; color:#64748b;"><i data-lucide="plus-circle" style="width:14px; vertical-align:middle"></i> NOVO LANÇAMENTO</h3>
+    <button class="btn-main" style="background: var(--primary); margin-bottom: 20px;" onclick="abrirClientes()">
+        <i data-lucide="users"></i> GERENCIAR CLIENTES
+    </button>
+
+    <div class="form-group">
+        <h3 style="margin: 0 0 15px 0; font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="plus-circle" style="width:18px"></i> NOVO LANÇAMENTO
+        </h3>
         <select id="sel-cliente"></select>
         <select id="tipo">
             <option value="venda">📦 VENDA DE PEÇAS</option>
-            <option value="servico">🔧 PRESTAÇÃO DE SERVIÇO</option>
+            <option value="servico">🔧 SERVIÇO TÉCNICO</option>
         </select>
-        <input type="text" id="desc" placeholder="DESCRIÇÃO (EX: FORMATAR PC)">
-        <div style="display:flex; gap:10px">
-            <input type="number" id="venda" placeholder="PREÇO">
-            <input type="number" id="custo" placeholder="CUSTO">
+        <input type="text" id="desc" placeholder="DESCRIÇÃO DO SERVIÇO/PRODUTO">
+        <div style="display:flex; gap:8px">
+            <input type="number" id="venda" placeholder="PREÇO R$">
+            <input type="number" id="custo" placeholder="CUSTO R$">
         </div>
         <select id="pagamento">
             <option value="PIX">⚡ PIX</option>
             <option value="DINHEIRO">💵 DINHEIRO</option>
-            <option value="C. CRÉDITO">💳 CRÉDITO</option>
-            <option value="C. DÉBITO">💳 DÉBITO</option>
+            <option value="C. CRÉDITO">💳 CARTÃO CRÉDITO</option>
+            <option value="C. DÉBITO">💳 CARTÃO DÉBITO</option>
         </select>
-        <button class="btn-main" style="background:var(--accent); margin-top:10px" onclick="registrarVenda()">
-            <i data-lucide="save"></i> SALVAR REGISTRO
+        <button class="btn-main" onclick="registrarVenda()">
+            <i data-lucide="check-circle"></i> SALVAR NO HISTÓRICO
         </button>
     </div>
 
@@ -236,37 +158,33 @@
 
 <div id="modalClientes" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0">NOVO CLIENTE</h3>
-        <input type="text" id="cad-nome" placeholder="NOME DO RESPONSÁVEL">
-        <input type="text" id="cad-fantasia" placeholder="NOME DA EMPRESA / FANTASIA">
-        <input type="text" id="cad-doc" placeholder="CPF / CNPJ">
+        <div style="width: 40px; height: 4px; background: #e2e8f0; margin: -10px auto 20px; border-radius: 10px;"></div>
+        <h2 style="margin: 0 0 20px 0; font-size: 18px;">CADASTRO DE CLIENTES</h2>
+        <input type="text" id="cad-nome" placeholder="NOME DO CLIENTE">
+        <input type="text" id="cad-fantasia" placeholder="NOME DA EMPRESA (OPCIONAL)">
+        <input type="text" id="cad-doc" placeholder="CPF OU CNPJ">
         <input type="text" id="cad-tel" placeholder="TELEFONE">
         <input type="text" id="cad-end" placeholder="ENDEREÇO">
-        
-        <button class="btn-main" style="background:var(--product)" onclick="salvarCliente()">CADASTRAR</button>
-        <hr>
-        <div id="lista-clientes-cadastrados" style="max-height: 200px; overflow-y:auto"></div>
-        <button class="btn-main" style="background:#64748b; margin-top:10px" onclick="fecharClientes()">FECHAR</button>
+        <button class="btn-main" style="background: var(--product)" onclick="salvarCliente()">CADASTRAR</button>
+        <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0;">
+        <div id="lista-clientes-cadastrados" style="max-height: 250px; overflow-y:auto"></div>
+        <button class="btn-main" style="background: #64748b; margin-top: 10px;" onclick="fecharClientes()">FECHAR</button>
     </div>
 </div>
 
 <script>
-    // Inicializar Ícones
     lucide.createIcons();
-
-    const CHAVE_VENDAS = "F2_PRO_V1";
-    const CHAVE_CLIENTES = "F2_CLIENTES";
+    const CHAVE_VENDAS = "F2_PRO_V1", CHAVE_CLIENTES = "F2_CLIENTES";
     let dadosVendas = JSON.parse(localStorage.getItem(CHAVE_VENDAS)) || [];
     let dadosClientes = JSON.parse(localStorage.getItem(CHAVE_CLIENTES)) || [];
-    let periodoAtual = 'dia';
-    let abaAtual = 'venda';
-    let meuGrafico = null;
+    let periodoAtual = 'dia', abaAtual = 'venda', meuGrafico = null;
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
+    // Funções de Modal e Cliente
     function abrirClientes() { document.getElementById('modalClientes').style.display = 'block'; listarClientes(); }
     function fecharClientes() { document.getElementById('modalClientes').style.display = 'none'; }
-
+    
     function salvarCliente() {
         const c = {
             nome: document.getElementById('cad-nome').value.toUpperCase(),
@@ -275,38 +193,36 @@
             tel: document.getElementById('cad-tel').value,
             end: document.getElementById('cad-end').value.toUpperCase()
         };
-        if(!c.nome) return alert("NOME OBRIGATÓRIO");
+        if(!c.nome) return alert("NOME É OBRIGATÓRIO");
         dadosClientes.push(c);
         localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes));
         ["cad-nome", "cad-fantasia", "cad-doc", "cad-tel", "cad-end"].forEach(id => document.getElementById(id).value = "");
-        listarClientes();
-        atualizarSelectClientes();
+        listarClientes(); atualizarSelectClientes();
     }
 
     function listarClientes() {
         const div = document.getElementById('lista-clientes-cadastrados');
         div.innerHTML = "";
         dadosClientes.forEach((c, i) => {
-            div.innerHTML += `<div class="item" style="font-size:10px">
-                <b>${c.fantasia || c.nome}</b>
-                <button onclick="removerCliente(${i})" style="color:var(--danger); border:none; background:none; font-weight:bold">X</button>
+            div.innerHTML += `<div class="item">
+                <div style="font-size:11px"><b>${c.fantasia || c.nome}</b><br><small>${c.tel}</small></div>
+                <button onclick="removerCliente(${i})" class="btn-del"><i data-lucide="trash-2" style="width:16px"></i></button>
             </div>`;
         });
+        lucide.createIcons();
     }
 
-    function removerCliente(i) {
-        if(confirm("EXCLUIR?")) { dadosClientes.splice(i, 1); localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes)); listarClientes(); atualizarSelectClientes(); }
-    }
+    function removerCliente(i) { if(confirm("EXCLUIR?")) { dadosClientes.splice(i, 1); localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes)); listarClientes(); atualizarSelectClientes(); } }
 
     function atualizarSelectClientes() {
         const sel = document.getElementById('sel-cliente');
         sel.innerHTML = '<option value="AVULSO">👤 CLIENTE AVULSO</option>';
         dadosClientes.sort((a,b) => (a.fantasia || a.nome).localeCompare(b.fantasia || b.nome)).forEach(c => {
-            const display = c.fantasia ? `${c.fantasia} (${c.nome})` : c.nome;
-            sel.innerHTML += `<option value="${display}">${display}</option>`;
+            sel.innerHTML += `<option value="${c.fantasia || c.nome}">${c.fantasia || c.nome}</option>`;
         });
     }
 
+    // Funções de Venda e Gráfico
     function registrarVenda() {
         const item = {
             cliente: document.getElementById('sel-cliente').value,
@@ -315,10 +231,9 @@
             venda: parseFloat(document.getElementById('venda').value) || 0,
             custo: parseFloat(document.getElementById('custo').value) || 0,
             pag: document.getElementById('pagamento').value,
-            ts: Date.now(),
-            data: new Date().toLocaleDateString('pt-BR')
+            ts: Date.now()
         };
-        if(!item.desc || item.venda === 0) return alert("PREENCHA OS CAMPOS!");
+        if(!item.desc || item.venda === 0) return alert("ERRO: DADOS INCOMPLETOS");
         dadosVendas.push(item);
         localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas));
         ["desc", "venda", "custo"].forEach(id => document.getElementById(id).value = "");
@@ -332,23 +247,13 @@
             type: 'doughnut',
             data: {
                 labels: ['PEÇAS', 'SERVIÇOS'],
-                datasets: [{ 
-                    data: [v, s], 
-                    backgroundColor: ['#10b981', '#8b5cf6'],
-                    hoverOffset: 4,
-                    borderWidth: 8,
-                    borderColor: '#ffffff'
-                }]
+                datasets: [{ data: [v, s], backgroundColor: ['#10b981', '#8b5cf6'], borderWidth: 0, cutout: '75%' }]
             },
-            options: { 
-                cutout: '70%',
-                maintainAspectRatio: false, 
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } } } 
-            }
+            options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: 'bold' } } } } }
         });
     }
 
-    function calcular() {
+    function atualizarTudo() {
         const agora = new Date();
         let vB = 0, sB = 0, lucro = 0;
         dadosVendas.forEach(item => {
@@ -363,40 +268,30 @@
                 lucro += (item.venda - item.custo);
             }
         });
+
         document.getElementById('rel-v-bruto').innerText = fmt(vB);
         document.getElementById('rel-s-bruto').innerText = fmt(sB);
         document.getElementById('rel-lucro').innerText = fmt(lucro);
         inicializarGrafico(vB, sB);
-    }
 
-    function atualizarTudo() {
-        calcular();
         const lista = document.getElementById('lista');
         lista.innerHTML = "";
-        document.getElementById('tab-v').className = 'tab' + (abaAtual === 'venda' ? ' active-p' : '');
-        document.getElementById('tab-s').className = 'tab' + (abaAtual === 'servico' ? ' active-s' : '');
-        
         dadosVendas.filter(i => i.tipo === abaAtual).reverse().slice(0, 15).forEach(item => {
             const div = document.createElement('div');
             div.className = 'item';
             div.innerHTML = `
-                <div>
-                    <b style="color:var(--primary)">${item.cliente}</b><br>
-                    <small style="color:#64748b">${item.desc} | ${item.pag}</small><br>
-                    <b style="color:${item.tipo === 'venda' ? 'var(--product)' : 'var(--service)'}">${fmt(item.venda)}</b>
-                </div>
-                <button onclick="removerVenda(${dadosVendas.indexOf(item)})" style="background:#fee2e2; color:var(--danger); border:none; border-radius:10px; padding:10px;"><i data-lucide="trash-2" style="width:16px"></i></button>`;
+                <div><b style="color:var(--primary)">${item.cliente}</b><br><small>${item.desc}</small><br><b>${fmt(item.venda)}</b></div>
+                <button onclick="removerVenda(${dadosVendas.indexOf(item)})" class="btn-del"><i data-lucide="trash-2" style="width:16px"></i></button>`;
             lista.appendChild(div);
         });
         lucide.createIcons();
     }
 
-    function removerVenda(i) { if(confirm("EXCLUIR?")) { dadosVendas.splice(i, 1); localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas)); atualizarTudo(); } }
-    function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-rel').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
+    function removerVenda(i) { if(confirm("REMOVER?")) { dadosVendas.splice(i, 1); localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas)); atualizarTudo(); } }
+    function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
     function mudarAba(t) { abaAtual = t; atualizarTudo(); }
 
-    atualizarSelectClientes();
-    atualizarTudo();
+    atualizarSelectClientes(); atualizarTudo();
 </script>
 </body>
 </html>
