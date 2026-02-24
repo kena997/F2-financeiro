@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F2 INFORMÁTICA - GESTÃO</title>
+    <title>F2 INFORMÁTICA - GESTÃO & CLIENTES</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #1e3c72; --product: #27ae60; --service: #8e44ad; --danger: #e74c3c; --bg: #f0f2f5; }
@@ -12,48 +12,41 @@
         .brand { text-align: center; border-bottom: 2px solid var(--primary); margin-bottom: 15px; padding-bottom: 10px; }
         .brand img { max-width: 180px; height: auto; display: block; margin: 0 auto; }
         
-        .chart-container { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; height: 200px; }
-        .meta-container { background: #eee; border-radius: 10px; padding: 10px; margin-bottom: 15px; text-align: center; cursor: pointer; }
-        .meta-bar { background: #ddd; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 5px; }
-        .meta-progress { background: var(--product); height: 100%; width: 0%; transition: 0.5s; }
+        .chart-container { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px; margin-bottom: 15px; height: 180px; }
+        
+        .form-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
+        h3 { font-size: 12px; margin: 0 0 10px 0; color: var(--primary); border-left: 4px solid var(--primary); padding-left: 5px; }
+        
+        input, select { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
+        
+        .btn-reg { background: var(--primary); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .btn-sec { background: #555; color: white; padding: 8px; border: none; border-radius: 6px; width: 100%; font-size: 11px; cursor: pointer; margin-bottom: 10px; }
+        
+        .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 12px; max-height: 80vh; overflow-y: auto; }
 
+        .item { background: white; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .relatorios { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 10px; }
         .btn-rel { background: #eee; border: none; padding: 8px 2px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
         .btn-rel.active { background: var(--primary); color: white; }
 
-        .dash-detalhado { background: #f8f9fa; border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-bottom: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .res-box { text-align: center; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .dash-detalhado { background: #f8f9fa; border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .res-box { text-align: center; }
         .res-box b { font-size: 1.1em; display: block; }
 
-        .resumo-pagamentos { display: grid; grid-template-columns: 1fr 1fr; background: #fff; border: 1px dashed #ccc; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 10px; gap: 8px; }
-        .pag-item { text-align: center; border-bottom: 1px solid #f0f0f0; padding: 2px; }
-
-        .form-box { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
-        .btn-reg { background: var(--primary); width: 100%; padding: 15px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        
         .tabs { display: flex; gap: 5px; margin: 10px 0; }
         .tab { flex: 1; padding: 10px; text-align: center; background: #ddd; border-radius: 8px; font-size: 11px; cursor: pointer; font-weight: bold; }
         .tab.active-p { background: var(--product); color: white; }
-        .tab.active-s { background: var(--service); color: white; }
-        .item { background: white; border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <div class="brand">
-        <img src="Logo_Kena.png" alt="F2 INFORMÁTICA">
-    </div>
+    <div class="brand"><img src="Logo_Kena.png" alt="F2 INFORMÁTICA"></div>
 
-    <div class="chart-container">
-        <canvas id="graficoF2"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="graficoF2"></canvas></div>
 
-    <div class="meta-container" onclick="mudarMeta()">
-        <small>META MENSAL: <b id="txt-meta">R$ 0,00</b></small>
-        <div class="meta-bar"><div id="bar-meta" class="meta-progress"></div></div>
-    </div>
+    <button class="btn-sec" onclick="abrirClientes()">👤 GERENCIAR CADASTRO DE CLIENTES</button>
 
     <div class="relatorios">
         <button class="btn-rel active" onclick="setPeriodo('dia', this)">HOJE</button>
@@ -63,29 +56,23 @@
     </div>
 
     <div class="dash-detalhado">
-        <div class="res-box" style="grid-column: span 2;">LUCRO LÍQUIDO <b id="rel-lucro" style="color:#2ecc71; font-size:1.4em;">R$ 0,00</b></div>
+        <div class="res-box" style="grid-column: span 2;">LUCRO LÍQUIDO <b id="rel-lucro" style="color:#2ecc71;">R$ 0,00</b></div>
         <div class="res-box">PEÇAS <b id="rel-v-bruto" style="color:var(--product)">R$ 0,00</b></div>
         <div class="res-box">SERVIÇOS <b id="rel-s-bruto" style="color:var(--service)">R$ 0,00</b></div>
     </div>
 
-    <div class="resumo-pagamentos">
-        <div class="pag-item"><span>PIX</span><b id="total-pix">R$ 0,00</b></div>
-        <div class="pag-item"><span>DINHEIRO</span><b id="total-dinheiro">R$ 0,00</b></div>
-        <div class="pag-item"><span>C. CRÉDITO</span><b id="total-credito">R$ 0,00</b></div>
-        <div class="pag-item"><span>C. DÉBITO</span><b id="total-debito">R$ 0,00</b></div>
-    </div>
-
     <div class="form-box">
+        <h3>LANCAR VENDA/SERVIÇO</h3>
+        <select id="sel-cliente"><option value="AVULSO">SELECIONE O CLIENTE</option></select>
         <select id="tipo"><option value="venda">📦 PEÇAS</option><option value="servico">🔧 SERVIÇO</option></select>
-        <input type="text" id="cliente" placeholder="CLIENTE">
-        <input type="text" id="desc" placeholder="DESCRIÇÃO">
-        <input type="number" id="venda" placeholder="VALOR FINAL">
-        <input type="number" id="custo" placeholder="CUSTO">
+        <input type="text" id="desc" placeholder="O QUE FOI VENDIDO/FEITO?">
+        <input type="number" id="venda" placeholder="VALOR FINAL (R$)">
+        <input type="number" id="custo" placeholder="CUSTO (R$)">
         <select id="pagamento">
             <option value="PIX">PIX</option><option value="DINHEIRO">DINHEIRO</option>
             <option value="C. CRÉDITO">C. CRÉDITO</option><option value="C. DÉBITO">C. DÉBITO</option>
         </select>
-        <button class="btn-reg" onclick="registrar()">SALVAR REGISTRO</button>
+        <button class="btn-reg" onclick="registrarVenda()">SALVAR NO HISTÓRICO</button>
     </div>
 
     <div class="tabs">
@@ -95,15 +82,93 @@
     <div id="lista"></div>
 </div>
 
+<div id="modalClientes" class="modal">
+    <div class="modal-content">
+        <h3>NOVO CLIENTE</h3>
+        <input type="text" id="cad-nome" placeholder="NOME COMPLETO">
+        <input type="text" id="cad-tel" placeholder="TELEFONE/WHATSAPP">
+        <button class="btn-reg" onclick="salvarCliente()">CADASTRAR</button>
+        <hr>
+        <h3>LISTA DE CLIENTES</h3>
+        <div id="lista-clientes-cadastrados"></div>
+        <button class="btn-sec" onclick="fecharClientes()">FECHAR</button>
+    </div>
+</div>
+
 <script>
-    const chave = "F2_PRO_V1";
-    let dados = JSON.parse(localStorage.getItem(chave)) || [];
-    let metaMensal = parseFloat(localStorage.getItem("F2_META")) || 5000;
-    let abaAtual = 'venda';
+    const CHAVE_VENDAS = "F2_PRO_V1";
+    const CHAVE_CLIENTES = "F2_CLIENTES";
+    
+    let dadosVendas = JSON.parse(localStorage.getItem(CHAVE_VENDAS)) || [];
+    let dadosClientes = JSON.parse(localStorage.getItem(CHAVE_CLIENTES)) || [];
     let periodoAtual = 'dia';
+    let abaAtual = 'venda';
     let meuGrafico = null;
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+
+    // --- LÓGICA DE CLIENTES ---
+    function abrirClientes() { 
+        document.getElementById('modalClientes').style.display = 'block'; 
+        listarClientes();
+    }
+    function fecharClientes() { document.getElementById('modalClientes').style.display = 'none'; }
+
+    function salvarCliente() {
+        const nome = document.getElementById('cad-nome').value.toUpperCase();
+        const tel = document.getElementById('cad-tel').value;
+        if(!nome) return alert("NOME OBRIGATÓRIO");
+        dadosClientes.push({ nome, tel });
+        localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes));
+        document.getElementById('cad-nome').value = "";
+        document.getElementById('cad-tel').value = "";
+        listarClientes();
+        atualizarSelectClientes();
+    }
+
+    function listarClientes() {
+        const div = document.getElementById('lista-clientes-cadastrados');
+        div.innerHTML = "";
+        dadosClientes.forEach((c, i) => {
+            div.innerHTML += `<div class="item"><span>${c.nome}</span> <button onclick="removerCliente(${i})" style="color:red; border:none; background:none;">[X]</button></div>`;
+        });
+    }
+
+    function removerCliente(i) {
+        if(confirm("REMOVER CLIENTE?")) {
+            dadosClientes.splice(i, 1);
+            localStorage.setItem(CHAVE_CLIENTES, JSON.stringify(dadosClientes));
+            listarClientes();
+            atualizarSelectClientes();
+        }
+    }
+
+    function atualizarSelectClientes() {
+        const sel = document.getElementById('sel-cliente');
+        sel.innerHTML = '<option value="AVULSO">SELECIONE O CLIENTE</option>';
+        dadosClientes.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(c => {
+            sel.innerHTML += `<option value="${c.nome}">${c.nome}</option>`;
+        });
+    }
+
+    // --- LÓGICA DE VENDAS ---
+    function registrarVenda() {
+        const item = {
+            cliente: document.getElementById('sel-cliente').value,
+            tipo: document.getElementById('tipo').value,
+            desc: document.getElementById('desc').value.toUpperCase(),
+            venda: parseFloat(document.getElementById('venda').value) || 0,
+            custo: parseFloat(document.getElementById('custo').value) || 0,
+            pag: document.getElementById('pagamento').value,
+            ts: Date.now(),
+            data: new Date().toLocaleDateString('pt-BR')
+        };
+        if(!item.desc || item.venda === 0) return alert("ERRO: PREENCHA OS DADOS");
+        dadosVendas.push(item);
+        localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas));
+        ["desc", "venda", "custo"].forEach(id => document.getElementById(id).value = "");
+        atualizarTudo();
+    }
 
     function inicializarGrafico(v, s) {
         const ctx = document.getElementById('graficoF2').getContext('2d');
@@ -118,35 +183,10 @@
         });
     }
 
-    function registrar() {
-        const item = {
-            tipo: document.getElementById('tipo').value,
-            cliente: document.getElementById('cliente').value.toUpperCase() || "AVULSO",
-            desc: document.getElementById('desc').value.toUpperCase(),
-            venda: parseFloat(document.getElementById('venda').value) || 0,
-            custo: parseFloat(document.getElementById('custo').value) || 0,
-            pag: document.getElementById('pagamento').value,
-            ts: Date.now(),
-            data: new Date().toLocaleDateString('pt-BR')
-        };
-        if (!item.desc || item.venda === 0) return alert("PREENCHA OS CAMPOS!");
-        dados.push(item);
-        localStorage.setItem(chave, JSON.stringify(dados));
-        ["cliente", "desc", "venda", "custo"].forEach(id => document.getElementById(id).value = "");
-        atualizarTudo();
-    }
-
-    function mudarMeta() {
-        let n = prompt("QUAL A META?", metaMensal);
-        if(n) { metaMensal = parseFloat(n); localStorage.setItem("F2_META", metaMensal); atualizarTudo(); }
-    }
-
     function calcular() {
         const agora = new Date();
-        let vB = 0, sB = 0, lucro = 0, fMes = 0;
-        let p = { PIX:0, DINHEIRO:0, "C. CRÉDITO":0, "C. DÉBITO":0 };
-
-        dados.forEach(item => {
+        let vB = 0, sB = 0, lucro = 0;
+        dadosVendas.forEach(item => {
             const d = new Date(item.ts);
             let inc = false;
             if (periodoAtual === 'dia' && d.toDateString() === agora.toDateString()) inc = true;
@@ -157,26 +197,13 @@
             if (inc) {
                 if (item.tipo === 'venda') vB += item.venda; else sB += item.venda;
                 lucro += (item.venda - item.custo);
-                p[item.pag] = (p[item.pag] || 0) + item.venda;
             }
-            if (d.getMonth() === agora.getMonth()) fMes += item.venda;
         });
-
         document.getElementById('rel-v-bruto').innerText = fmt(vB);
         document.getElementById('rel-s-bruto').innerText = fmt(sB);
         document.getElementById('rel-lucro').innerText = fmt(lucro);
-        document.getElementById('total-pix').innerText = fmt(p.PIX);
-        document.getElementById('total-dinheiro').innerText = fmt(p.DINHEIRO);
-        document.getElementById('total-credito').innerText = fmt(p["C. CRÉDITO"]);
-        document.getElementById('total-debito').innerText = fmt(p["C. DÉBITO"]);
-        document.getElementById('txt-meta').innerText = fmt(metaMensal);
-        document.getElementById('bar-meta').style.width = Math.min((fMes / metaMensal) * 100, 100) + "%";
         inicializarGrafico(vB, sB);
     }
-
-    function mudarAba(t) { abaAtual = t; atualizarTudo(); }
-    function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-rel').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
-    function remover(i) { if(confirm("EXCLUIR?")) { dados.splice(i, 1); localStorage.setItem(chave, JSON.stringify(dados)); atualizarTudo(); } }
 
     function atualizarTudo() {
         calcular();
@@ -185,14 +212,21 @@
         document.getElementById('tab-v').className = 'tab' + (abaAtual === 'venda' ? ' active-p' : '');
         document.getElementById('tab-s').className = 'tab' + (abaAtual === 'servico' ? ' active-s' : '');
         
-        dados.filter(i => i.tipo === abaAtual).reverse().slice(0, 15).forEach(item => {
+        dadosVendas.filter(i => i.tipo === abaAtual).reverse().slice(0, 15).forEach(item => {
             const div = document.createElement('div');
             div.className = 'item';
-            div.innerHTML = `<div><b>${item.cliente}</b><br><small>${item.desc} (${item.pag})</small><br><b>${fmt(item.venda)}</b></div>
-                <button style="background:var(--danger);color:white;border:none;border-radius:6px;padding:8px" onclick="remover(${dados.indexOf(item)})">X</button>`;
+            div.innerHTML = `<div><b>${item.cliente}</b><br><small>${item.desc}</small><br><b>${fmt(item.venda)}</b></div>
+                <button onclick="removerVenda(${dadosVendas.indexOf(item)})" style="background:red; color:white; border:none; border-radius:4px; padding:5px 10px;">X</button>`;
             lista.appendChild(div);
         });
     }
+
+    function removerVenda(i) { if(confirm("EXCLUIR REGISTRO?")) { dadosVendas.splice(i, 1); localStorage.setItem(CHAVE_VENDAS, JSON.stringify(dadosVendas)); atualizarTudo(); } }
+    function setPeriodo(p, el) { periodoAtual = p; document.querySelectorAll('.btn-rel').forEach(b => b.classList.remove('active')); el.classList.add('active'); atualizarTudo(); }
+    function mudarAba(t) { abaAtual = t; atualizarTudo(); }
+
+    // Init
+    atualizarSelectClientes();
     atualizarTudo();
 </script>
 </body>
