@@ -16,7 +16,8 @@
         .container { max-width: 450px; margin: auto; }
 
         .brand { text-align: center; margin-bottom: 20px; }
-        .brand img { max-width: 140px; filter: brightness(1.2); }
+        /* Ajuste na logo para garantir visibilidade */
+        .brand img { max-width: 140px; filter: brightness(1.2); height: auto; }
 
         .dash-main { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -26,11 +27,18 @@
         .dash-main small { color: #94a3b8; font-size: 10px; letter-spacing: 1px; }
         .dash-main h1 { margin: 10px 0; font-size: 32px; color: var(--green); }
 
+        /* Estilo dos Botões de Filtro */
+        .filter-bar { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .btn-filter { 
+            background: rgba(255,255,255,0.05); border: 1px solid #334155; color: white; 
+            padding: 6px 12px; border-radius: 20px; font-size: 10px; cursor: pointer; transition: 0.3s;
+        }
+        .btn-filter.active-p { background: var(--green); border-color: var(--green); color: #0f172a; font-weight: bold; }
+
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #334155; }
         .stat-card b { display: block; font-size: 16px; margin-top: 5px; }
 
-        /* Chart Area */
         .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 220px; border: 1px solid #334155; }
 
         .btn { 
@@ -66,14 +74,18 @@
 <body>
 
 <div class="container">
-    <div class="brand"><img src="Logo.png" alt="F2"></div>
+    <div class="brand">
+        <img src="logo_kena.png%20face.jpg" alt="F2 GESTÃO" onerror="this.src='https://via.placeholder.com/140x50?text=F2+GESTÃO'">
+    </div>
 
     <div class="dash-main">
         <small id="label-periodo">LUCRO LÍQUIDO (HOJE)</small>
         <h1 id="rel-lucro">R$ 0,00</h1>
-        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
-            <button onclick="setPeriodo('dia', this)" id="btn-dia" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:bold; cursor:pointer">HOJE</button>
-            <button onclick="setPeriodo('mes', this)" id="btn-mes" style="background:none; border:none; color:white; font-size:11px; cursor:pointer; opacity:0.6">MÊS</button>
+        
+        <div class="filter-bar">
+            <button onclick="setPeriodo('dia', this)" class="btn-filter active-p">HOJE</button>
+            <button onclick="setPeriodo('mes', this)" class="btn-filter">MÊS</button>
+            <button onclick="setPeriodo('ano', this)" class="btn-filter">ANO</button>
         </div>
     </div>
 
@@ -94,7 +106,7 @@
         <i data-lucide="users"></i> GERIR CLIENTES
     </button>
     
-    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; margin-bottom: 20px;">
+    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; border-color: #334155;">
         <i data-lucide="download"></i> EXPORTAR RELATÓRIO (CSV)
     </button>
 
@@ -145,7 +157,7 @@
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
-    // --- FUNÇÕES DE RELATÓRIO ---
+    // --- GRÁFICOS ---
     function renderizarGrafico(vendas, servicos) {
         const ctx = document.getElementById('meuGrafico').getContext('2d');
         if (chartInstance) chartInstance.destroy();
@@ -158,7 +170,6 @@
                     data: [vendas, servicos],
                     backgroundColor: ['#10b981', '#8b5cf6'],
                     borderWidth: 0,
-                    hoverOffset: 10
                 }]
             },
             options: {
@@ -172,6 +183,17 @@
         });
     }
 
+    // --- RELATÓRIOS E PERÍODOS ---
+    function setPeriodo(p, btn) { 
+        periodo = p; 
+        document.getElementById('label-periodo').innerText = `LUCRO LÍQUIDO (${p.toUpperCase()})`;
+        
+        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active-p'));
+        btn.classList.add('active-p');
+        
+        atualizarTudo(); 
+    }
+
     function exportarCSV() {
         if (dados.length === 0) return alert("SEM DADOS");
         let csv = "\ufeffDATA;CLIENTE;TIPO;DESCRICAO;VALOR;CUSTO;LUCRO;PAGAMENTO\n";
@@ -182,14 +204,13 @@
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", `F2_RELATORIO_${new Date().toLocaleDateString()}.csv`);
+        link.setAttribute("download", `RELATORIO_${periodo.toUpperCase()}.csv`);
         link.click();
     }
 
-    // --- GESTÃO DE CLIENTES ---
+    // --- CLIENTES ---
     function abrirClientes() { document.getElementById('modalClientes').style.display='block'; listarCli(); }
     function fecharClientes() { document.getElementById('modalClientes').style.display='none'; }
-
     function salvarCli() {
         const n = document.getElementById('c-nome').value.toUpperCase();
         const f = document.getElementById('c-fant').value.toUpperCase();
@@ -197,24 +218,22 @@
         clientes.push({ nome: n, fantasia: f, tel: document.getElementById('c-tel').value });
         localStorage.setItem("F2_CLI", JSON.stringify(clientes));
         listarCli(); atualizarSel();
+        document.getElementById('c-nome').value = ""; document.getElementById('c-fant').value = ""; document.getElementById('c-tel').value = "";
     }
-
     function listarCli() {
         const d = document.getElementById('lista-cli'); d.innerHTML = "";
         clientes.forEach((c, i) => {
             d.innerHTML += `<div class="item"><div><b>${c.fantasia || c.nome}</b></div><button class="btn-del" onclick="delCli(${i})">X</button></div>`;
         });
     }
-
-    function delCli(i) { clientes.splice(i, 1); localStorage.setItem("F2_CLI", JSON.stringify(clientes)); listarCli(); atualizarSel(); }
-
+    function delCli(i) { if(confirm("EXCLUIR CLIENTE?")) { clientes.splice(i, 1); localStorage.setItem("F2_CLI", JSON.stringify(clientes)); listarCli(); atualizarSel(); } }
     function atualizarSel() {
         const s = document.getElementById('sel-cliente');
         s.innerHTML = '<option value="AVULSO">👤 CLIENTE AVULSO</option>';
         clientes.forEach(c => s.innerHTML += `<option value="${c.fantasia || c.nome}">${c.fantasia || c.nome}</option>`);
     }
 
-    // --- CORE ---
+    // --- REGISTROS ---
     function registrar() {
         const v = parseFloat(document.getElementById('venda').value) || 0;
         const c = parseFloat(document.getElementById('custo').value) || 0;
@@ -240,11 +259,13 @@
             const d = new Date(i.ts);
             let ok = false;
             
-            const isMes = d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+            const isAno = d.getFullYear() === agora.getFullYear();
+            const isMes = isAno && d.getMonth() === agora.getMonth();
             const isDia = d.toDateString() === agora.toDateString();
 
             if(periodo === 'dia' && isDia) ok = true;
             else if(periodo === 'mes' && isMes) ok = true;
+            else if(periodo === 'ano' && isAno) ok = true;
 
             if(ok) {
                 if(i.tipo === 'venda') vb += i.venda; else sb += i.venda;
@@ -276,18 +297,7 @@
         atualizarTudo(); 
     }
 
-    function setPeriodo(p, btn) { 
-        periodo = p; 
-        document.getElementById('label-periodo').innerText = `LUCRO LÍQUIDO (${p === 'dia' ? 'HOJE' : 'MÊS'})`;
-        document.getElementById('btn-dia').style.opacity = p === 'dia' ? "1" : "0.6";
-        document.getElementById('btn-mes').style.opacity = p === 'mes' ? "1" : "0.6";
-        document.getElementById('btn-dia').style.color = p === 'dia' ? "var(--green)" : "white";
-        document.getElementById('btn-mes').style.color = p === 'mes' ? "var(--green)" : "white";
-        atualizarTudo(); 
-    }
-
     atualizarSel(); atualizarTudo();
 </script>
 </body>
 </html>
-
