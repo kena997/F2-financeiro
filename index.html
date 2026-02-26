@@ -1,310 +1,288 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>F2 GESTÃO PRO</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root { 
-            /* ALTERAÇÃO AQUI: Cores de fundo mais neutras e modernas (menos azuladas) */
-            --bg: #121212; /* Fundo principal quase preto */
-            --card: #222222; /* Cartões cinza escuro neutro */
-            
-            --accent: #3b82f6; 
-            --green: #10b981; --purple: #8b5cf6; --red: #ef4444; --text: #f8fafc;
-            --border: #333333; /* Nova variável para bordas mais sutis */
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; text-transform: uppercase; }
-        .container { max-width: 450px; margin: auto; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F2 GESTÃO PRO 3.0</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
-        .brand { text-align: center; margin-bottom: 20px; }
-        .brand img { max-width: 140px; filter: brightness(1.2); height: auto; }
+<style>
+:root{
+--bg:#0f172a;
+--card:rgba(255,255,255,0.05);
+--border:rgba(255,255,255,0.08);
+--accent:#3b82f6;
+--green:#22c55e;
+--purple:#a855f7;
+--red:#ef4444;
+--text:#f1f5f9;
+}
 
-        .dash-main { 
-            /* ALTERAÇÃO AQUI: Gradiente neutro */
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            padding: 25px; border-radius: 24px; border: 1px solid var(--border);
-            text-align: center; margin-bottom: 20px;
-        }
-        .dash-main small { color: #94a3b8; font-size: 10px; letter-spacing: 1px; }
-        .dash-main h1 { margin: 10px 0; font-size: 32px; color: var(--green); }
+*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{margin:0;background:linear-gradient(160deg,#0f172a,#020617);color:var(--text)}
+.container{max-width:500px;margin:auto;padding:20px}
 
-        .filter-bar { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-        .btn-filter { 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; 
-            padding: 6px 12px; border-radius: 20px; font-size: 10px; cursor: pointer; transition: 0.3s;
-        }
-        .btn-filter.active-p { background: var(--green); border-color: var(--green); color: #121212; font-weight: bold; }
+.brand{text-align:center;margin-bottom:20px}
+.brand img{max-width:140px}
 
-        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .stat-card b { display: block; font-size: 16px; margin-top: 5px; }
+.dash-main{
+background:linear-gradient(135deg,#1e293b,#0f172a);
+padding:30px;
+border-radius:30px;
+border:1px solid var(--border);
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,.5);
+margin-bottom:20px
+}
+.dash-main small{opacity:.6}
+.dash-main h1{font-size:36px;margin:15px 0;color:var(--green)}
 
-        .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 220px; border: 1px solid var(--border); }
+.meta-box{
+margin-top:15px;
+background:var(--card);
+border-radius:20px;
+padding:10px;
+border:1px solid var(--border)
+}
+.progress{
+height:10px;
+background:#111;
+border-radius:20px;
+overflow:hidden;
+margin-top:5px
+}
+.progress-bar{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,var(--green),#16a34a);
+transition:.5s
+}
 
-        .btn { 
-            background: var(--accent); color: white; border: none; padding: 16px; 
-            border-radius: 16px; width: 100%; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px;
-        }
-        .btn-outline { background: transparent; border: 1px solid var(--border); margin-bottom: 10px; }
+.chart-box,.form,.stat-card{
+background:var(--card);
+border-radius:25px;
+padding:20px;
+border:1px solid var(--border);
+backdrop-filter:blur(12px);
+box-shadow:0 8px 20px rgba(0,0,0,.4);
+margin-bottom:20px;
+transition:.3s
+}
+.stat-card:hover,.form:hover{transform:translateY(-4px)}
 
-        .form { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); }
-        input, select { 
-            width: 100%; padding: 14px; margin: 6px 0; border-radius: 12px; 
-            border: 1px solid var(--border); 
-            background: var(--bg); /* ALTERAÇÃO AQUI: Fundo do input combina com o fundo da página */
-            color: white; font-weight: bold;
-        }
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); font-size: 11px; font-weight: bold; }
-        .tab.active-v { background: var(--green); border-color: var(--green); color: var(--bg); }
-        .tab.active-s { background: var(--purple); border-color: var(--purple); color: var(--bg); }
+.btn{
+background:linear-gradient(135deg,#3b82f6,#2563eb);
+border:none;
+padding:15px;
+border-radius:18px;
+color:#fff;
+font-weight:bold;
+width:100%;
+cursor:pointer;
+margin-top:10px;
+transition:.3s;
+box-shadow:0 6px 18px rgba(59,130,246,.4)
+}
+.btn:hover{transform:translateY(-2px)}
 
-        .item { 
-            background: var(--card); padding: 15px; border-radius: 18px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
-            border: 1px solid var(--border);
-        }
-        .item-info b { font-size: 14px; }
-        .item-info small { color: #94a3b8; display: block; margin: 3px 0; }
-        .btn-del { background: #450a0a; color: var(--red); border: none; padding: 10px; border-radius: 12px; }
+input,select{
+width:100%;
+padding:14px;
+border-radius:15px;
+margin:8px 0;
+border:1px solid var(--border);
+background:#0f172a;
+color:#fff
+}
+input:focus,select:focus{
+outline:none;
+border:1px solid var(--accent);
+box-shadow:0 0 0 2px rgba(59,130,246,.3)
+}
 
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; }
-        .modal-content { background: var(--card); margin: 10% auto; padding: 25px; width: 90%; border-radius: 24px; border: 1px solid var(--border); }
-    </style>
+.item{
+background:var(--card);
+border-radius:20px;
+padding:15px;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-left:4px solid var(--green);
+transition:.3s
+}
+.item:hover{transform:scale(1.02)}
+
+.btn-del{
+background:#450a0a;
+color:var(--red);
+border:none;
+padding:8px 12px;
+border-radius:10px;
+cursor:pointer
+}
+
+.tabs{display:flex;gap:10px;margin-bottom:15px}
+.tab{
+flex:1;
+padding:12px;
+border-radius:15px;
+text-align:center;
+background:var(--card);
+cursor:pointer
+}
+.active{background:var(--green);color:#000;font-weight:bold}
+
+</style>
 </head>
 <body>
 
 <div class="container">
-    <div class="brand">
-        <img src="logo_kena.png%20face.jpg" alt="F2 GESTÃO" onerror="this.src='https://via.placeholder.com/140x50?text=F2+GESTÃO'">
-    </div>
 
-    <div class="dash-main">
-        <small id="label-periodo">LUCRO LÍQUIDO (HOJE)</small>
-        <h1 id="rel-lucro">R$ 0,00</h1>
-        
-        <div class="filter-bar">
-            <button onclick="setPeriodo('dia', this)" class="btn-filter active-p">HOJE</button>
-            <button onclick="setPeriodo('mes', this)" class="btn-filter">MÊS</button>
-            <button onclick="setPeriodo('ano', this)" class="btn-filter">ANO</button>
-        </div>
-    </div>
-
-    <div class="chart-box">
-        <canvas id="meuGrafico"></canvas>
-    </div>
-
-    <div class="stats">
-        <div class="stat-card" style="border-bottom: 3px solid var(--green)">
-            <small>PEÇAS</small><b id="rel-v-bruto">R$ 0,00</b>
-        </div>
-        <div class="stat-card" style="border-bottom: 3px solid var(--purple)">
-            <small>SERVIÇOS</small><b id="rel-s-bruto">R$ 0,00</b>
-        </div>
-    </div>
-
-    <button class="btn btn-outline" onclick="abrirClientes()">
-        <i data-lucide="users"></i> GERIR CLIENTES
-    </button>
-    
-    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; border-color: var(--border);">
-        <i data-lucide="download"></i> EXPORTAR RELATÓRIO (CSV)
-    </button>
-
-    <div class="form">
-        <select id="sel-cliente"></select>
-        <select id="tipo">
-            <option value="venda">📦 VENDA DE PEÇAS</option>
-            <option value="servico">🔧 SERVIÇO TÉCNICO</option>
-        </select>
-        <input type="text" id="desc" placeholder="DESCRIÇÃO">
-        <div style="display:flex; gap:8px">
-            <input type="number" id="venda" placeholder="PREÇO">
-            <input type="number" id="custo" placeholder="CUSTO">
-        </div>
-        <select id="pagamento">
-            <option value="PIX">PIX</option><option value="DINHEIRO">DINHEIRO</option>
-            <option value="CARTÃO">CARTÃO</option>
-        </select>
-        <button class="btn" onclick="registrar()">SALVAR REGISTRO</button>
-    </div>
-
-    <div class="tabs">
-        <div id="tab-v" class="tab active-v" onclick="mudarAba('venda')">PEÇAS</div>
-        <div id="tab-s" class="tab" onclick="mudarAba('servico')">SERVIÇOS</div>
-    </div>
-    <div id="lista"></div>
+<div class="brand">
+<h2>F2 GESTÃO PRO</h2>
 </div>
 
-<div id="modalClientes" class="modal">
-    <div class="modal-content">
-        <h3>CADASTRO</h3>
-        <input type="text" id="c-nome" placeholder="RESPONSÁVEL">
-        <input type="text" id="c-fant" placeholder="EMPRESA / FANTASIA">
-        <input type="text" id="c-tel" placeholder="TELEFONE">
-        <button class="btn" style="background: var(--green); margin-top: 10px;" onclick="salvarCli()">CADASTRAR</button>
-        <hr style="border:0; border-top:1px solid var(--border); margin:20px 0">
-        <div id="lista-cli" style="max-height:200px; overflow-y:auto"></div>
-        <button class="btn btn-outline" style="margin-top:10px" onclick="fecharClientes()">FECHAR</button>
-    </div>
+<div class="dash-main">
+<small>LUCRO DO MÊS</small>
+<h1 id="lucroTotal">R$ 0,00</h1>
+
+<div class="meta-box">
+<small>META MENSAL</small>
+<input type="number" id="metaInput" placeholder="Definir meta mensal">
+<div class="progress"><div class="progress-bar" id="barraMeta"></div></div>
+</div>
+</div>
+
+<div class="chart-box">
+<canvas id="grafico"></canvas>
+</div>
+
+<div class="stats">
+<div class="stat-card">
+<small>PEÇAS</small>
+<h3 id="vendasTotal">R$ 0,00</h3>
+</div>
+<div class="stat-card">
+<small>SERVIÇOS</small>
+<h3 id="servicosTotal">R$ 0,00</h3>
+</div>
+</div>
+
+<div class="form">
+<select id="tipo">
+<option value="venda">VENDA</option>
+<option value="servico">SERVIÇO</option>
+</select>
+<input type="text" id="desc" placeholder="Descrição">
+<input type="number" id="valor" placeholder="Valor">
+<input type="number" id="custo" placeholder="Custo">
+<button class="btn" onclick="salvar()">Salvar</button>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="mudar('venda')">PEÇAS</div>
+<div class="tab" onclick="mudar('servico')">SERVIÇOS</div>
+</div>
+
+<div id="lista"></div>
+
 </div>
 
 <script>
-    lucide.createIcons();
-    let dados = JSON.parse(localStorage.getItem("F2_DATA")) || [];
-    let clientes = JSON.parse(localStorage.getItem("F2_CLI")) || [];
-    let periodo = 'dia', aba = 'venda';
-    let chartInstance = null;
+lucide.createIcons()
+let dados=JSON.parse(localStorage.getItem("F2"))||[]
+let aba='venda'
+let meta=localStorage.getItem("META")||0
+document.getElementById("metaInput").value=meta
 
-    function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
+function fmt(v){return "R$ "+v.toLocaleString('pt-BR',{minimumFractionDigits:2})}
 
-    // --- GRÁFICOS ---
-    function renderizarGrafico(vendas, servicos) {
-        const ctx = document.getElementById('meuGrafico').getContext('2d');
-        if (chartInstance) chartInstance.destroy();
+function salvar(){
+let tipo=document.getElementById("tipo").value
+let desc=document.getElementById("desc").value
+let valor=parseFloat(document.getElementById("valor").value)||0
+let custo=parseFloat(document.getElementById("custo").value)||0
+if(!desc||valor==0)return alert("Preencha os campos")
+dados.push({tipo,desc,valor,custo,ts:Date.now()})
+localStorage.setItem("F2",JSON.stringify(dados))
+atualizar()
+}
 
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['PEÇAS', 'SERVIÇOS'],
-                datasets: [{
-                    data: [vendas, servicos],
-                    backgroundColor: ['#10b981', '#8b5cf6'],
-                    borderWidth: 0,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: '#f8fafc', font: { size: 10 } } }
-                },
-                cutout: '70%'
-            }
-        });
-    }
+function atualizar(){
+let mes=new Date().getMonth()
+let ano=new Date().getFullYear()
+let vendas=0,servicos=0,lucro=0
+dados.forEach(i=>{
+let d=new Date(i.ts)
+if(d.getMonth()==mes&&d.getFullYear()==ano){
+if(i.tipo=='venda')vendas+=i.valor
+else servicos+=i.valor
+lucro+=i.valor-i.custo
+}
+})
 
-    // --- RELATÓRIOS E PERÍODOS ---
-    function setPeriodo(p, btn) { 
-        periodo = p; 
-        document.getElementById('label-periodo').innerText = `LUCRO LÍQUIDO (${p.toUpperCase()})`;
-        
-        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active-p'));
-        btn.classList.add('active-p');
-        
-        atualizarTudo(); 
-    }
+document.getElementById("vendasTotal").innerText=fmt(vendas)
+document.getElementById("servicosTotal").innerText=fmt(servicos)
+document.getElementById("lucroTotal").innerText=fmt(lucro)
 
-    function exportarCSV() {
-        if (dados.length === 0) return alert("SEM DADOS");
-        let csv = "\ufeffDATA;CLIENTE;TIPO;DESCRICAO;VALOR;CUSTO;LUCRO;PAGAMENTO\n";
-        dados.forEach(i => {
-            const d = new Date(i.ts).toLocaleDateString('pt-BR');
-            csv += `${d};${i.cli};${i.tipo};${i.desc};${i.venda};${i.custo};${i.venda-i.custo};${i.pag}\n`;
-        });
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", `RELATORIO_${periodo.toUpperCase()}.csv`);
-        link.click();
-    }
+meta=document.getElementById("metaInput").value||0
+localStorage.setItem("META",meta)
+let porcent=(lucro/meta)*100
+if(meta==0)porcent=0
+document.getElementById("barraMeta").style.width=Math.min(porcent,100)+"%"
 
-    // --- CLIENTES ---
-    function abrirClientes() { document.getElementById('modalClientes').style.display='block'; listarCli(); }
-    function fecharClientes() { document.getElementById('modalClientes').style.display='none'; }
-    function salvarCli() {
-        const n = document.getElementById('c-nome').value.toUpperCase();
-        const f = document.getElementById('c-fant').value.toUpperCase();
-        if(!n) return alert("NOME OBRIGATÓRIO");
-        clientes.push({ nome: n, fantasia: f, tel: document.getElementById('c-tel').value });
-        localStorage.setItem("F2_CLI", JSON.stringify(clientes));
-        listarCli(); atualizarSel();
-        document.getElementById('c-nome').value = ""; document.getElementById('c-fant').value = ""; document.getElementById('c-tel').value = "";
-    }
-    function listarCli() {
-        const d = document.getElementById('lista-cli'); d.innerHTML = "";
-        clientes.forEach((c, i) => {
-            d.innerHTML += `<div class="item"><div><b>${c.fantasia || c.nome}</b></div><button class="btn-del" onclick="delCli(${i})">X</button></div>`;
-        });
-    }
-    function delCli(i) { if(confirm("EXCLUIR CLIENTE?")) { clientes.splice(i, 1); localStorage.setItem("F2_CLI", JSON.stringify(clientes)); listarCli(); atualizarSel(); } }
-    function atualizarSel() {
-        const s = document.getElementById('sel-cliente');
-        s.innerHTML = '<option value="AVULSO">👤 CLIENTE AVULSO</option>';
-        clientes.forEach(c => s.innerHTML += `<option value="${c.fantasia || c.nome}">${c.fantasia || c.nome}</option>`);
-    }
+renderGrafico(vendas,servicos)
+renderLista()
+}
 
-    // --- REGISTROS ---
-    function registrar() {
-        const v = parseFloat(document.getElementById('venda').value) || 0;
-        const c = parseFloat(document.getElementById('custo').value) || 0;
-        const d = document.getElementById('desc').value.toUpperCase();
-        if(!d || v === 0) return alert("PREENCHA TUDO");
-        dados.push({
-            cli: document.getElementById('sel-cliente').value,
-            tipo: document.getElementById('tipo').value,
-            desc: d, venda: v, custo: c,
-            pag: document.getElementById('pagamento').value,
-            ts: Date.now()
-        });
-        localStorage.setItem("F2_DATA", JSON.stringify(dados));
-        document.getElementById('desc').value = ""; document.getElementById('venda').value = ""; document.getElementById('custo').value = "";
-        atualizarTudo();
-    }
+let chart
+function renderGrafico(v,s){
+if(chart)chart.destroy()
+chart=new Chart(document.getElementById("grafico"),{
+type:'doughnut',
+data:{labels:['Peças','Serviços'],datasets:[{data:[v,s],backgroundColor:['#22c55e','#a855f7']} ]},
+options:{plugins:{legend:{position:'bottom'}}}
+})
+}
 
-    function atualizarTudo() {
-        const agora = new Date();
-        let vb=0, sb=0, luc=0;
+function renderLista(){
+let div=document.getElementById("lista")
+div.innerHTML=""
+dados.filter(i=>i.tipo==aba).reverse().slice(0,10).forEach((i,index)=>{
+div.innerHTML+=`
+<div class="item">
+<div>
+<b>${i.desc}</b><br>
+<small>${fmt(i.valor)}</small>
+</div>
+<button class="btn-del" onclick="del(${index})">X</button>
+</div>`
+})
+}
 
-        dados.forEach(i => {
-            const d = new Date(i.ts);
-            let ok = false;
-            
-            const isAno = d.getFullYear() === agora.getFullYear();
-            const isMes = isAno && d.getMonth() === agora.getMonth();
-            const isDia = d.toDateString() === agora.toDateString();
+function del(i){
+if(confirm("Excluir?")){
+dados.splice(i,1)
+localStorage.setItem("F2",JSON.stringify(dados))
+atualizar()
+}
+}
 
-            if(periodo === 'dia' && isDia) ok = true;
-            else if(periodo === 'mes' && isMes) ok = true;
-            else if(periodo === 'ano' && isAno) ok = true;
+function mudar(t){
+aba=t
+document.querySelectorAll(".tab").forEach(tab=>tab.classList.remove("active"))
+event.target.classList.add("active")
+renderLista()
+}
 
-            if(ok) {
-                if(i.tipo === 'venda') vb += i.venda; else sb += i.venda;
-                luc += (i.venda - i.custo);
-            }
-        });
+document.getElementById("metaInput").addEventListener("input",atualizar)
 
-        document.getElementById('rel-v-bruto').innerText = fmt(vb);
-        document.getElementById('rel-s-bruto').innerText = fmt(sb);
-        document.getElementById('rel-lucro').innerText = fmt(luc);
-        
-        renderizarGrafico(vb, sb);
-
-        const l = document.getElementById('lista'); l.innerHTML = "";
-        dados.filter(i => i.tipo === aba).reverse().slice(0, 15).forEach(i => {
-            l.innerHTML += `<div class="item" style="border-left-color:${aba === 'venda' ? 'var(--green)' : 'var(--purple)'}">
-                <div class="item-info"><b>${i.cli}</b><small>${i.desc}</small><b>${fmt(i.venda)}</b></div>
-                <button class="btn-del" onclick="delVenda(${dados.indexOf(i)})">X</button>
-            </div>`;
-        });
-    }
-
-    function delVenda(i) { if(confirm("EXCLUIR?")) { dados.splice(i, 1); localStorage.setItem("F2_DATA", JSON.stringify(dados)); atualizarTudo(); } }
-    
-    function mudarAba(t) { 
-        aba = t; 
-        document.getElementById('tab-v').className = 'tab'+(t==='venda'?' active-v':''); 
-        document.getElementById('tab-s').className = 'tab'+(t==='servico'?' active-s':''); 
-        atualizarTudo(); 
-    }
-
-    atualizarSel(); atualizarTudo();
+atualizar()
 </script>
+
 </body>
 </html>
