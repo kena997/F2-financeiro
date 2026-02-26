@@ -8,67 +8,74 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { 
-            --bg: #0f172a; --card: #1e293b; --accent: #3b82f6; 
+            /* ALTERAÇÃO AQUI: Cores de fundo mais neutras e modernas (menos azuladas) */
+            --bg: #121212; /* Fundo principal quase preto */
+            --card: #222222; /* Cartões cinza escuro neutro */
+            
+            --accent: #3b82f6; 
             --green: #10b981; --purple: #8b5cf6; --red: #ef4444; --text: #f8fafc;
+            --border: #333333; /* Nova variável para bordas mais sutis */
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; text-transform: uppercase; }
         .container { max-width: 450px; margin: auto; }
 
         .brand { text-align: center; margin-bottom: 20px; }
-        /* Ajuste na logo para garantir visibilidade */
         .brand img { max-width: 140px; filter: brightness(1.2); height: auto; }
 
         .dash-main { 
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 25px; border-radius: 24px; border: 1px solid #334155;
+            /* ALTERAÇÃO AQUI: Gradiente neutro */
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            padding: 25px; border-radius: 24px; border: 1px solid var(--border);
             text-align: center; margin-bottom: 20px;
         }
         .dash-main small { color: #94a3b8; font-size: 10px; letter-spacing: 1px; }
         .dash-main h1 { margin: 10px 0; font-size: 32px; color: var(--green); }
 
-        /* Estilo dos Botões de Filtro */
         .filter-bar { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
         .btn-filter { 
-            background: rgba(255,255,255,0.05); border: 1px solid #334155; color: white; 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; 
             padding: 6px 12px; border-radius: 20px; font-size: 10px; cursor: pointer; transition: 0.3s;
         }
-        .btn-filter.active-p { background: var(--green); border-color: var(--green); color: #0f172a; font-weight: bold; }
+        .btn-filter.active-p { background: var(--green); border-color: var(--green); color: #121212; font-weight: bold; }
 
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #334155; }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
         .stat-card b { display: block; font-size: 16px; margin-top: 5px; }
 
-        .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 220px; border: 1px solid #334155; }
+        .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 220px; border: 1px solid var(--border); }
 
         .btn { 
             background: var(--accent); color: white; border: none; padding: 16px; 
             border-radius: 16px; width: 100%; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px;
         }
-        .btn-outline { background: transparent; border: 1px solid #334155; margin-bottom: 10px; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); margin-bottom: 10px; }
 
-        .form { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 20px; border: 1px solid #334155; }
+        .form { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 20px; border: 1px solid var(--border); }
         input, select { 
             width: 100%; padding: 14px; margin: 6px 0; border-radius: 12px; 
-            border: 1px solid #334155; background: #0f172a; color: white; font-weight: bold;
+            border: 1px solid var(--border); 
+            background: var(--bg); /* ALTERAÇÃO AQUI: Fundo do input combina com o fundo da página */
+            color: white; font-weight: bold;
         }
 
         .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; background: #334155; font-size: 11px; font-weight: bold; }
-        .tab.active-v { background: var(--green); }
-        .tab.active-s { background: var(--purple); }
+        .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; background: var(--card); border: 1px solid var(--border); font-size: 11px; font-weight: bold; }
+        .tab.active-v { background: var(--green); border-color: var(--green); color: var(--bg); }
+        .tab.active-s { background: var(--purple); border-color: var(--purple); color: var(--bg); }
 
         .item { 
             background: var(--card); padding: 15px; border-radius: 18px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
+            border: 1px solid var(--border);
         }
         .item-info b { font-size: 14px; }
         .item-info small { color: #94a3b8; display: block; margin: 3px 0; }
         .btn-del { background: #450a0a; color: var(--red); border: none; padding: 10px; border-radius: 12px; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; }
-        .modal-content { background: var(--card); margin: 10% auto; padding: 25px; width: 90%; border-radius: 24px; border: 1px solid #334155; }
+        .modal-content { background: var(--card); margin: 10% auto; padding: 25px; width: 90%; border-radius: 24px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -106,7 +113,7 @@
         <i data-lucide="users"></i> GERIR CLIENTES
     </button>
     
-    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; border-color: #334155;">
+    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; border-color: var(--border);">
         <i data-lucide="download"></i> EXPORTAR RELATÓRIO (CSV)
     </button>
 
@@ -142,7 +149,7 @@
         <input type="text" id="c-fant" placeholder="EMPRESA / FANTASIA">
         <input type="text" id="c-tel" placeholder="TELEFONE">
         <button class="btn" style="background: var(--green); margin-top: 10px;" onclick="salvarCli()">CADASTRAR</button>
-        <hr style="border:0; border-top:1px solid #334155; margin:20px 0">
+        <hr style="border:0; border-top:1px solid var(--border); margin:20px 0">
         <div id="lista-cli" style="max-height:200px; overflow-y:auto"></div>
         <button class="btn btn-outline" style="margin-top:10px" onclick="fecharClientes()">FECHAR</button>
     </div>
