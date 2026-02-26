@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
+<head><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F2 GESTÃO PRO 3.0</title>
@@ -291,32 +292,31 @@ const doc = new jsPDF();
 let hoje = new Date();
 let mesAtual = hoje.getMonth();
 let anoAtual = hoje.getFullYear();
+let mesAnterior = mesAtual === 0 ? 11 : mesAtual - 1;
+let anoAnterior = mesAtual === 0 ? anoAtual - 1 : anoAtual;
 
-let vendas=0, servicos=0, lucro=0;
-let pix=0, dinheiro=0, cartao=0;
-let lista=[];
+let atual = { vendas:0, servicos:0, lucro:0 };
+let anterior = { vendas:0, servicos:0, lucro:0 };
 
-// FILTRAR DADOS DO MÊS
 dados.forEach(i=>{
 let d=new Date(i.ts);
+
 if(d.getMonth()==mesAtual && d.getFullYear()==anoAtual){
+if(i.tipo=='venda') atual.vendas+=i.valor;
+else atual.servicos+=i.valor;
+atual.lucro+=i.valor-i.custo;
+}
 
-if(i.tipo=='venda') vendas+=i.valor;
-else servicos+=i.valor;
-
-lucro+=i.valor-i.custo;
-
-if(i.pag=="PIX") pix+=i.valor;
-if(i.pag=="DINHEIRO") dinheiro+=i.valor;
-if(i.pag=="CARTÃO") cartao+=i.valor;
-
-lista.push(i);
+if(d.getMonth()==mesAnterior && d.getFullYear()==anoAnterior){
+if(i.tipo=='venda') anterior.vendas+=i.valor;
+else anterior.servicos+=i.valor;
+anterior.lucro+=i.valor-i.custo;
 }
 });
 
-// ====== CABEÇALHO ======
+// ===== CABEÇALHO =====
 doc.setFillColor(15,23,42);
-doc.rect(0,0,210,30,"F");
+doc.rect(0,0,210,35,"F");
 
 doc.setTextColor(255,255,255);
 doc.setFont("helvetica","bold");
@@ -324,78 +324,69 @@ doc.setFontSize(18);
 doc.text("F2 INFORMÁTICA",105,15,null,null,"center");
 
 doc.setFontSize(11);
-doc.text("RELATÓRIO FINANCEIRO MENSAL",105,23,null,null,"center");
+doc.text("RELATÓRIO EMPRESARIAL FINANCEIRO",105,25,null,null,"center");
 
 doc.setTextColor(0,0,0);
 
-doc.setFontSize(10);
-doc.text(`Período: ${mesAtual+1}/${anoAtual}`,14,40);
-doc.text(`Emitido em: ${hoje.toLocaleDateString()}`,150,40);
+doc.setFontSize(9);
+doc.text("CNPJ: 00.000.000/0001-00",14,45);
+doc.text("Endereço: Travessa das Dálias, 15 - Jorge Teixeira",14,50);
+doc.text("Telefone: (92) 98146-6494",14,55);
 
-// ====== RESUMO ======
+doc.text(`Período: ${mesAtual+1}/${anoAtual}`,150,45);
+doc.text(`Emitido em: ${hoje.toLocaleDateString()}`,150,50);
+
+// ===== RESUMO ATUAL =====
 doc.setFontSize(13);
 doc.setFont("helvetica","bold");
-doc.text("RESUMO FINANCEIRO",14,55);
+doc.text("RESUMO MÊS ATUAL",14,70);
 
 doc.setFont("helvetica","normal");
 doc.setFontSize(11);
 
-doc.text(`Total Peças: ${fmt(vendas)}`,14,65);
-doc.text(`Total Serviços: ${fmt(servicos)}`,14,72);
-doc.text(`Lucro Líquido: ${fmt(lucro)}`,14,79);
+doc.text(`Vendas Peças: ${fmt(atual.vendas)}`,14,80);
+doc.text(`Serviços: ${fmt(atual.servicos)}`,14,87);
+doc.text(`Lucro Líquido: ${fmt(atual.lucro)}`,14,94);
 
-// ====== FORMAS DE PAGAMENTO ======
+// ===== COMPARATIVO =====
 doc.setFont("helvetica","bold");
-doc.text("FORMAS DE PAGAMENTO",120,55);
+doc.text("COMPARATIVO MÊS ANTERIOR",120,70);
 
 doc.setFont("helvetica","normal");
-doc.text(`PIX: ${fmt(pix)}`,120,65);
-doc.text(`Dinheiro: ${fmt(dinheiro)}`,120,72);
-doc.text(`Cartão: ${fmt(cartao)}`,120,79);
 
-doc.line(14,90,196,90);
+let variacao = anterior.lucro === 0 ? 0 :
+((atual.lucro - anterior.lucro) / anterior.lucro) * 100;
 
-// ====== TABELA ======
-let y=100;
+doc.text(`Lucro Anterior: ${fmt(anterior.lucro)}`,120,80);
+doc.text(`Variação: ${variacao.toFixed(2)} %`,120,87);
 
+doc.line(14,105,196,105);
+
+// ===== GRÁFICO =====
 doc.setFont("helvetica","bold");
-doc.text("Data",14,y);
-doc.text("Descrição",35,y);
-doc.text("Tipo",105,y);
-doc.text("Valor",130,y);
-doc.text("Lucro",160,y);
+doc.text("GRÁFICO FINANCEIRO",14,115);
 
-y+=6;
-doc.setFont("helvetica","normal");
+let canvas = document.getElementById("grafico");
+let imagemGrafico = await html2canvas(canvas);
+let imgData = imagemGrafico.toDataURL("image/png");
 
-lista.forEach((i,index)=>{
+doc.addImage(imgData,"PNG",30,120,150,60);
 
-if(y>270){
-doc.addPage();
-y=20;
-}
+// ===== ASSINATURA =====
+doc.line(60,210,150,210);
+doc.setFontSize(10);
+doc.text("Assinatura Responsável",80,218);
 
-doc.text(new Date(i.ts).toLocaleDateString(),14,y);
-doc.text(i.desc.substring(0,25),35,y);
-doc.text(i.tipo=="venda"?"Peça":"Serviço",105,y);
-doc.text(fmt(i.valor),130,y);
-doc.text(fmt(i.valor-i.custo),160,y);
+doc.setFontSize(9);
+doc.text("Kenanias Souza da Silva",75,225);
+doc.text("F2 Informática",85,230);
 
-y+=7;
-
-});
-
-// ====== RODAPÉ COM PAGINAÇÃO ======
+// ===== PAGINAÇÃO =====
 let totalPaginas = doc.getNumberOfPages();
 for(let i=1;i<=totalPaginas;i++){
 doc.setPage(i);
-doc.setFontSize(9);
 doc.text(`Página ${i} de ${totalPaginas}`,180,290);
-doc.text("F2 Informática - Sistema de Gestão Pro",14,290);
 }
 
 doc.save(`RELATORIO_EMPRESARIAL_F2_${mesAtual+1}_${anoAtual}.pdf`);
 }
-</body>
-</html>
-
