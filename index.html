@@ -1,392 +1,147 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<head>
 <meta charset="UTF-8">
+<title>F2 Gestão 4.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>F2 GESTÃO PRO 3.0</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
-:root{
---bg:#0f172a;
---card:rgba(255,255,255,0.05);
---border:rgba(255,255,255,0.08);
---accent:#3b82f6;
---green:#22c55e;
---purple:#a855f7;
---red:#ef4444;
---text:#f1f5f9;
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}
-body{margin:0;background:linear-gradient(160deg,#0f172a,#020617);color:var(--text)}
-.container{max-width:500px;margin:auto;padding:20px}
-
-.brand{text-align:center;margin-bottom:20px}
-.brand img{max-width:140px}
-
-.dash-main{
-background:linear-gradient(135deg,#1e293b,#0f172a);
-padding:30px;
-border-radius:30px;
-border:1px solid var(--border);
-text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,.5);
-margin-bottom:20px
-}
-.dash-main small{opacity:.6}
-.dash-main h1{font-size:36px;margin:15px 0;color:var(--green)}
-
-.meta-box{
-margin-top:15px;
-background:var(--card);
-border-radius:20px;
-padding:10px;
-border:1px solid var(--border)
-}
-.progress{
-height:10px;
-background:#111;
-border-radius:20px;
-overflow:hidden;
-margin-top:5px
-}
-.progress-bar{
-height:100%;
-width:0%;
-background:linear-gradient(90deg,var(--green),#16a34a);
-transition:.5s
-}
-
-.chart-box,.form,.stat-card{
-background:var(--card);
-border-radius:25px;
-padding:20px;
-border:1px solid var(--border);
-backdrop-filter:blur(12px);
-box-shadow:0 8px 20px rgba(0,0,0,.4);
-margin-bottom:20px;
-transition:.3s
-}
-.stat-card:hover,.form:hover{transform:translateY(-4px)}
-
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-.btn{
-background:linear-gradient(135deg,#3b82f6,#2563eb);
-border:none;
-padding:15px;
-border-radius:18px;
-color:#fff;
-font-weight:bold;
-width:100%;
-cursor:pointer;
-margin-top:10px;
-transition:.3s;
-box-shadow:0 6px 18px rgba(59,130,246,.4)
-}
-.btn:hover{transform:translateY(-2px)}
-
-input,select{
-width:100%;
-padding:14px;
+.container{
+background:white;
+color:#333;
+padding:40px;
 border-radius:15px;
-margin:8px 0;
-border:1px solid var(--border);
-background:#0f172a;
-color:#fff
-}
-input:focus,select:focus{
-outline:none;
-border:1px solid var(--accent);
-box-shadow:0 0 0 2px rgba(59,130,246,.3)
+width:350px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
 }
 
-.item{
-background:var(--card);
-border-radius:20px;
-padding:15px;
-margin-bottom:10px;
+h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:none;
+border-radius:8px;
+background:#2c5364;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:#203a43;
+}
+
+.dashboard{
+display:none;
+padding:20px;
+width:100%;
+height:100vh;
+background:#f4f6f9;
+color:#333;
+}
+
+.topbar{
 display:flex;
 justify-content:space-between;
 align-items:center;
-border-left:4px solid var(--green);
-transition:.3s
-}
-.item:hover{transform:scale(1.02)}
-
-.btn-del{
-background:#450a0a;
-color:var(--red);
-border:none;
-padding:8px 12px;
+background:#2c5364;
+color:white;
+padding:15px;
 border-radius:10px;
-cursor:pointer
 }
 
-.tabs{display:flex;gap:10px;margin-bottom:15px}
-.tab{
-flex:1;
-padding:12px;
-border-radius:15px;
-text-align:center;
-background:var(--card);
-cursor:pointer
+.card{
+background:white;
+padding:20px;
+margin-top:20px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
-.active{background:var(--green);color:#000;font-weight:bold}
-
 </style>
 </head>
+
 <body>
 
-<div class="container">
-
-<div class="brand">
-<h2>F2 GESTÃO PRO</h2>
+<div class="container" id="loginBox">
+<h2>F2 INFORMÁTICA</h2>
+<input type="text" id="user" placeholder="Usuário">
+<input type="password" id="pass" placeholder="Senha">
+<button onclick="login()">Entrar</button>
 </div>
 
-<div class="dash-main">
-<small>LUCRO DO MÊS</small>
-<h1 id="lucroTotal">R$ 0,00</h1>
+<div class="dashboard" id="painel">
 
-<div class="meta-box">
-<small>META MENSAL</small>
-<input type="number" id="metaInput" placeholder="Definir meta mensal">
-<div class="progress"><div class="progress-bar" id="barraMeta"></div></div>
+<div class="topbar">
+<div>
+<strong>F2 Gestão 4.0 Empresarial</strong>
 </div>
+<button onclick="logout()" style="width:auto;background:red;">Sair</button>
 </div>
 
-<div class="chart-box">
-<canvas id="grafico"></canvas>
+<div class="card">
+<h3>Bem-vindo, Kenanias 👋</h3>
+<p>Sistema pronto para integrar o financeiro e relatórios empresariais.</p>
 </div>
-
-<div class="stats">
-<div class="stat-card">
-<small>PEÇAS</small>
-<h3 id="vendasTotal">R$ 0,00</h3>
-</div>
-<div class="stat-card">
-<small>SERVIÇOS</small>
-<h3 id="servicosTotal">R$ 0,00</h3>
-</div>
-</div>
-
-<div class="form">
-<select id="tipo">
-<option value="venda">VENDA</option>
-<option value="servico">SERVIÇO</option>
-</select>
-<input type="text" id="desc" placeholder="Descrição">
-<input type="number" id="valor" placeholder="Valor">
-<input type="number" id="custo" placeholder="Custo">
-<button class="btn" onclick="salvar()">Salvar</button>
-</div>
-
-<div class="tabs">
-<div class="tab active" onclick="mudar('venda')">PEÇAS</div>
-<div class="tab" onclick="mudar('servico')">SERVIÇOS</div>
-</div>
-
-<div id="lista"></div>
 
 </div>
 
 <script>
-lucide.createIcons()
-let dados=JSON.parse(localStorage.getItem("F2"))||[]
-let aba='venda'
-let meta=localStorage.getItem("META")||0
-document.getElementById("metaInput").value=meta
 
-function fmt(v){return "R$ "+v.toLocaleString('pt-BR',{minimumFractionDigits:2})}
+// ===== LOGIN FIXO =====
+const usuarioPadrao = "admin";
+const senhaPadrao = "1234";
 
-function salvar(){
-let tipo=document.getElementById("tipo").value
-let desc=document.getElementById("desc").value
-let valor=parseFloat(document.getElementById("valor").value)||0
-let custo=parseFloat(document.getElementById("custo").value)||0
-if(!desc||valor==0)return alert("Preencha os campos")
-dados.push({tipo,desc,valor,custo,ts:Date.now()})
-localStorage.setItem("F2",JSON.stringify(dados))
-atualizar()
-}
+function login(){
+let u = document.getElementById("user").value;
+let p = document.getElementById("pass").value;
 
-function atualizar(){
-let mes=new Date().getMonth()
-let ano=new Date().getFullYear()
-let vendas=0,servicos=0,lucro=0
-dados.forEach(i=>{
-let d=new Date(i.ts)
-if(d.getMonth()==mes&&d.getFullYear()==ano){
-if(i.tipo=='venda')vendas+=i.valor
-else servicos+=i.valor
-lucro+=i.valor-i.custo
-}
-})
-
-document.getElementById("vendasTotal").innerText=fmt(vendas)
-document.getElementById("servicosTotal").innerText=fmt(servicos)
-document.getElementById("lucroTotal").innerText=fmt(lucro)
-
-meta=document.getElementById("metaInput").value||0
-localStorage.setItem("META",meta)
-let porcent=(lucro/meta)*100
-if(meta==0)porcent=0
-document.getElementById("barraMeta").style.width=Math.min(porcent,100)+"%"
-
-renderGrafico(vendas,servicos)
-renderLista()
-}
-
-let chart
-function renderGrafico(v,s){
-if(chart)chart.destroy()
-chart=new Chart(document.getElementById("grafico"),{
-type:'doughnut',
-data:{labels:['Peças','Serviços'],datasets:[{data:[v,s],backgroundColor:['#22c55e','#a855f7']} ]},
-options:{plugins:{legend:{position:'bottom'}}}
-})
-}
-
-function renderLista(){
-let div=document.getElementById("lista")
-div.innerHTML=""
-dados.filter(i=>i.tipo==aba).reverse().slice(0,10).forEach((i,index)=>{
-div.innerHTML+=`
-<div class="item">
-<div>
-<b>${i.desc}</b><br>
-<small>${fmt(i.valor)}</small>
-</div>
-<button class="btn-del" onclick="del(${index})">X</button>
-</div>`
-})
-}
-
-function del(i){
-if(confirm("Excluir?")){
-dados.splice(i,1)
-localStorage.setItem("F2",JSON.stringify(dados))
-atualizar()
+if(u === usuarioPadrao && p === senhaPadrao){
+localStorage.setItem("f2logado","sim");
+mostrarSistema();
+}else{
+alert("Usuário ou senha incorretos");
 }
 }
 
-function mudar(t){
-aba=t
-document.querySelectorAll(".tab").forEach(tab=>tab.classList.remove("active"))
-event.target.classList.add("active")
-renderLista()
+function logout(){
+localStorage.removeItem("f2logado");
+location.reload();
 }
 
-document.getElementById("metaInput").addEventListener("input",atualizar)
+function mostrarSistema(){
+document.getElementById("loginBox").style.display="none";
+document.getElementById("painel").style.display="block";
+}
 
-atualizar()
+if(localStorage.getItem("f2logado") === "sim"){
+mostrarSistema();
+}
+
 </script>
-async function gerarPDF(){
 
-const { jsPDF } = window.jspdf;
-const doc = new jsPDF();
-
-let hoje = new Date();
-let mesAtual = hoje.getMonth();
-let anoAtual = hoje.getFullYear();
-let mesAnterior = mesAtual === 0 ? 11 : mesAtual - 1;
-let anoAnterior = mesAtual === 0 ? anoAtual - 1 : anoAtual;
-
-let atual = { vendas:0, servicos:0, lucro:0 };
-let anterior = { vendas:0, servicos:0, lucro:0 };
-
-dados.forEach(i=>{
-let d=new Date(i.ts);
-
-if(d.getMonth()==mesAtual && d.getFullYear()==anoAtual){
-if(i.tipo=='venda') atual.vendas+=i.valor;
-else atual.servicos+=i.valor;
-atual.lucro+=i.valor-i.custo;
-}
-
-if(d.getMonth()==mesAnterior && d.getFullYear()==anoAnterior){
-if(i.tipo=='venda') anterior.vendas+=i.valor;
-else anterior.servicos+=i.valor;
-anterior.lucro+=i.valor-i.custo;
-}
-});
-
-// ===== CABEÇALHO =====
-doc.setFillColor(15,23,42);
-doc.rect(0,0,210,35,"F");
-
-doc.setTextColor(255,255,255);
-doc.setFont("helvetica","bold");
-doc.setFontSize(18);
-doc.text("F2 INFORMÁTICA",105,15,null,null,"center");
-
-doc.setFontSize(11);
-doc.text("RELATÓRIO EMPRESARIAL FINANCEIRO",105,25,null,null,"center");
-
-doc.setTextColor(0,0,0);
-
-doc.setFontSize(9);
-doc.text("CNPJ: 00.000.000/0001-00",14,45);
-doc.text("Endereço: Travessa das Dálias, 15 - Jorge Teixeira",14,50);
-doc.text("Telefone: (92) 98146-6494",14,55);
-
-doc.text(`Período: ${mesAtual+1}/${anoAtual}`,150,45);
-doc.text(`Emitido em: ${hoje.toLocaleDateString()}`,150,50);
-
-// ===== RESUMO ATUAL =====
-doc.setFontSize(13);
-doc.setFont("helvetica","bold");
-doc.text("RESUMO MÊS ATUAL",14,70);
-
-doc.setFont("helvetica","normal");
-doc.setFontSize(11);
-
-doc.text(`Vendas Peças: ${fmt(atual.vendas)}`,14,80);
-doc.text(`Serviços: ${fmt(atual.servicos)}`,14,87);
-doc.text(`Lucro Líquido: ${fmt(atual.lucro)}`,14,94);
-
-// ===== COMPARATIVO =====
-doc.setFont("helvetica","bold");
-doc.text("COMPARATIVO MÊS ANTERIOR",120,70);
-
-doc.setFont("helvetica","normal");
-
-let variacao = anterior.lucro === 0 ? 0 :
-((atual.lucro - anterior.lucro) / anterior.lucro) * 100;
-
-doc.text(`Lucro Anterior: ${fmt(anterior.lucro)}`,120,80);
-doc.text(`Variação: ${variacao.toFixed(2)} %`,120,87);
-
-doc.line(14,105,196,105);
-
-// ===== GRÁFICO =====
-doc.setFont("helvetica","bold");
-doc.text("GRÁFICO FINANCEIRO",14,115);
-
-let canvas = document.getElementById("grafico");
-let imagemGrafico = await html2canvas(canvas);
-let imgData = imagemGrafico.toDataURL("image/png");
-
-doc.addImage(imgData,"PNG",30,120,150,60);
-
-// ===== ASSINATURA =====
-doc.line(60,210,150,210);
-doc.setFontSize(10);
-doc.text("Assinatura Responsável",80,218);
-
-doc.setFontSize(9);
-doc.text("Kenanias Souza da Silva",75,225);
-doc.text("F2 Informática",85,230);
-
-// ===== PAGINAÇÃO =====
-let totalPaginas = doc.getNumberOfPages();
-for(let i=1;i<=totalPaginas;i++){
-doc.setPage(i);
-doc.text(`Página ${i} de ${totalPaginas}`,180,290);
-}
-
-doc.save(`RELATORIO_EMPRESARIAL_F2_${mesAtual+1}_${anoAtual}.pdf`);
-}
+</body>
+</html>
