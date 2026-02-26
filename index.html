@@ -15,11 +15,9 @@
         body { background: var(--bg); color: var(--text); margin: 0; padding: 15px; text-transform: uppercase; }
         .container { max-width: 450px; margin: auto; }
 
-        /* Logo */
         .brand { text-align: center; margin-bottom: 20px; }
         .brand img { max-width: 140px; filter: brightness(1.2); }
 
-        /* Header Dash */
         .dash-main { 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             padding: 25px; border-radius: 24px; border: 1px solid #334155;
@@ -28,36 +26,31 @@
         .dash-main small { color: #94a3b8; font-size: 10px; letter-spacing: 1px; }
         .dash-main h1 { margin: 10px 0; font-size: 32px; color: var(--green); }
 
-        /* Stats Grid */
         .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #334155; }
         .stat-card b { display: block; font-size: 16px; margin-top: 5px; }
 
         /* Chart Area */
-        .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 180px; }
+        .chart-box { background: var(--card); padding: 15px; border-radius: 24px; margin-bottom: 20px; height: 220px; border: 1px solid #334155; }
 
-        /* Buttons */
         .btn { 
             background: var(--accent); color: white; border: none; padding: 16px; 
             border-radius: 16px; width: 100%; font-weight: bold; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px;
         }
-        .btn-outline { background: transparent; border: 1px solid #334155; margin-bottom: 20px; }
+        .btn-outline { background: transparent; border: 1px solid #334155; margin-bottom: 10px; }
 
-        /* Forms */
         .form { background: var(--card); padding: 20px; border-radius: 24px; margin-bottom: 20px; border: 1px solid #334155; }
         input, select { 
             width: 100%; padding: 14px; margin: 6px 0; border-radius: 12px; 
             border: 1px solid #334155; background: #0f172a; color: white; font-weight: bold;
         }
 
-        /* Tabs */
         .tabs { display: flex; gap: 10px; margin-bottom: 15px; }
         .tab { flex: 1; padding: 12px; text-align: center; border-radius: 12px; background: #334155; font-size: 11px; font-weight: bold; }
         .tab.active-v { background: var(--green); }
         .tab.active-s { background: var(--purple); }
 
-        /* List Items */
         .item { 
             background: var(--card); padding: 15px; border-radius: 18px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);
@@ -66,7 +59,6 @@
         .item-info small { color: #94a3b8; display: block; margin: 3px 0; }
         .btn-del { background: #450a0a; color: var(--red); border: none; padding: 10px; border-radius: 12px; }
 
-        /* Modal */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; }
         .modal-content { background: var(--card); margin: 10% auto; padding: 25px; width: 90%; border-radius: 24px; border: 1px solid #334155; }
     </style>
@@ -77,12 +69,16 @@
     <div class="brand"><img src="Logo_Kena.png" alt="F2"></div>
 
     <div class="dash-main">
-        <small>LUCRO LÍQUIDO ACUMULADO</small>
+        <small id="label-periodo">LUCRO LÍQUIDO (HOJE)</small>
         <h1 id="rel-lucro">R$ 0,00</h1>
-        <div style="display: flex; gap: 5px; justify-content: center;">
-            <button onclick="setPeriodo('dia', this)" style="background:none; border:none; color:white; font-size:10px; cursor:pointer">HOJE</button>
-            <button onclick="setPeriodo('mes', this)" style="background:none; border:none; color:white; font-size:10px; cursor:pointer">MÊS</button>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
+            <button onclick="setPeriodo('dia', this)" id="btn-dia" style="background:none; border:none; color:var(--green); font-size:11px; font-weight:bold; cursor:pointer">HOJE</button>
+            <button onclick="setPeriodo('mes', this)" id="btn-mes" style="background:none; border:none; color:white; font-size:11px; cursor:pointer; opacity:0.6">MÊS</button>
         </div>
+    </div>
+
+    <div class="chart-box">
+        <canvas id="meuGrafico"></canvas>
     </div>
 
     <div class="stats">
@@ -96,6 +92,10 @@
 
     <button class="btn btn-outline" onclick="abrirClientes()">
         <i data-lucide="users"></i> GERIR CLIENTES
+    </button>
+    
+    <button class="btn btn-outline" onclick="exportarCSV()" style="color: #94a3b8; margin-bottom: 20px;">
+        <i data-lucide="download"></i> EXPORTAR RELATÓRIO (CSV)
     </button>
 
     <div class="form">
@@ -141,9 +141,52 @@
     let dados = JSON.parse(localStorage.getItem("F2_DATA")) || [];
     let clientes = JSON.parse(localStorage.getItem("F2_CLI")) || [];
     let periodo = 'dia', aba = 'venda';
+    let chartInstance = null;
 
     function fmt(v) { return "R$ " + v.toLocaleString('pt-BR', { minimumFractionDigits: 2 }); }
 
+    // --- FUNÇÕES DE RELATÓRIO ---
+    function renderizarGrafico(vendas, servicos) {
+        const ctx = document.getElementById('meuGrafico').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['PEÇAS', 'SERVIÇOS'],
+                datasets: [{
+                    data: [vendas, servicos],
+                    backgroundColor: ['#10b981', '#8b5cf6'],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#f8fafc', font: { size: 10 } } }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+
+    function exportarCSV() {
+        if (dados.length === 0) return alert("SEM DADOS");
+        let csv = "\ufeffDATA;CLIENTE;TIPO;DESCRICAO;VALOR;CUSTO;LUCRO;PAGAMENTO\n";
+        dados.forEach(i => {
+            const d = new Date(i.ts).toLocaleDateString('pt-BR');
+            csv += `${d};${i.cli};${i.tipo};${i.desc};${i.venda};${i.custo};${i.venda-i.custo};${i.pag}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute("download", `F2_RELATORIO_${new Date().toLocaleDateString()}.csv`);
+        link.click();
+    }
+
+    // --- GESTÃO DE CLIENTES ---
     function abrirClientes() { document.getElementById('modalClientes').style.display='block'; listarCli(); }
     function fecharClientes() { document.getElementById('modalClientes').style.display='none'; }
 
@@ -171,6 +214,7 @@
         clientes.forEach(c => s.innerHTML += `<option value="${c.fantasia || c.nome}">${c.fantasia || c.nome}</option>`);
     }
 
+    // --- CORE ---
     function registrar() {
         const v = parseFloat(document.getElementById('venda').value) || 0;
         const c = parseFloat(document.getElementById('custo').value) || 0;
@@ -191,11 +235,17 @@
     function atualizarTudo() {
         const agora = new Date();
         let vb=0, sb=0, luc=0;
+
         dados.forEach(i => {
             const d = new Date(i.ts);
             let ok = false;
-            if(periodo === 'dia' && d.toDateString() === agora.toDateString()) ok = true;
-            else if(periodo === 'mes' && d.getMonth() === agora.getMonth()) ok = true;
+            
+            const isMes = d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
+            const isDia = d.toDateString() === agora.toDateString();
+
+            if(periodo === 'dia' && isDia) ok = true;
+            else if(periodo === 'mes' && isMes) ok = true;
+
             if(ok) {
                 if(i.tipo === 'venda') vb += i.venda; else sb += i.venda;
                 luc += (i.venda - i.custo);
@@ -205,6 +255,8 @@
         document.getElementById('rel-v-bruto').innerText = fmt(vb);
         document.getElementById('rel-s-bruto').innerText = fmt(sb);
         document.getElementById('rel-lucro').innerText = fmt(luc);
+        
+        renderizarGrafico(vb, sb);
 
         const l = document.getElementById('lista'); l.innerHTML = "";
         dados.filter(i => i.tipo === aba).reverse().slice(0, 15).forEach(i => {
@@ -216,8 +268,23 @@
     }
 
     function delVenda(i) { if(confirm("EXCLUIR?")) { dados.splice(i, 1); localStorage.setItem("F2_DATA", JSON.stringify(dados)); atualizarTudo(); } }
-    function mudarAba(t) { aba = t; document.getElementById('tab-v').className = 'tab'+(t==='venda'?' active-v':''); document.getElementById('tab-s').className = 'tab'+(t==='servico'?' active-s':''); atualizarTudo(); }
-    function setPeriodo(p) { periodo = p; atualizarTudo(); }
+    
+    function mudarAba(t) { 
+        aba = t; 
+        document.getElementById('tab-v').className = 'tab'+(t==='venda'?' active-v':''); 
+        document.getElementById('tab-s').className = 'tab'+(t==='servico'?' active-s':''); 
+        atualizarTudo(); 
+    }
+
+    function setPeriodo(p, btn) { 
+        periodo = p; 
+        document.getElementById('label-periodo').innerText = `LUCRO LÍQUIDO (${p === 'dia' ? 'HOJE' : 'MÊS'})`;
+        document.getElementById('btn-dia').style.opacity = p === 'dia' ? "1" : "0.6";
+        document.getElementById('btn-mes').style.opacity = p === 'mes' ? "1" : "0.6";
+        document.getElementById('btn-dia').style.color = p === 'dia' ? "var(--green)" : "white";
+        document.getElementById('btn-mes').style.color = p === 'mes' ? "var(--green)" : "white";
+        atualizarTudo(); 
+    }
 
     atualizarSel(); atualizarTudo();
 </script>
